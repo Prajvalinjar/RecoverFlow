@@ -17,7 +17,7 @@ import app.repository.models  # noqa: F401
 logger = logging.getLogger("recoverflow")
 
 # Parse ALLOWED_ORIGINS environment variable
-raw_origins: str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+raw_origins: str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
 allowed_origins: List[str] = [
     origin.strip() for origin in raw_origins.split(",") if origin.strip()
 ]

@@ -19,6 +19,7 @@ from app.observability.recovery_metrics import RecoveryMetricsService
 from app.execution.provider_health import ProviderHealthMonitor
 from app.recovery.operations import RecoveryOperationsController
 from app.recovery.job_operations import RecoveryJobOperationsService, InvalidJobStateOperationError
+from app.execution.circuit_breaker import CircuitBreaker
 from app.repository.postgres import (
     PostgresRecoveryCaseRepository,
     PostgresPaymentRepository,
@@ -26,6 +27,7 @@ from app.repository.postgres import (
     PostgresAuditRepository,
     PostgresRecoveryExecutionRepository,
     PostgresRecoveryJobRepository,
+    PostgresProviderOperationRepository,
 )
 
 api_v1_router = APIRouter(prefix="/api/v1", tags=["V1 API"])

@@ -3,7 +3,7 @@ import threading
 from abc import ABC, abstractmethod
 from enum import Enum
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Callable
 from fastapi import Request, HTTPException, status
 
 from app.security.config import get_security_config
