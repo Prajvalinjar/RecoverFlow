@@ -13,14 +13,18 @@ def get_database_url() -> str:
 def create_db_engine(url: str = None):
     db_url = url or get_database_url()
     connect_args = {}
+    kwargs = {}
     if db_url.startswith("sqlite"):
         connect_args = {"check_same_thread": False}
+    else:
+        kwargs["pool_pre_ping"] = True
 
     return create_engine(
         db_url,
         connect_args=connect_args,
-        pool_pre_ping=True,
+        **kwargs
     )
+
 
 
 engine = create_db_engine()

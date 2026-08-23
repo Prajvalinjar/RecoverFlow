@@ -11,15 +11,10 @@ from app.api.v1.router import api_v1_router
 from app.database.connection import engine, Base
 from app.security.config import SecurityConfigurationError
 from app.security.request_security import RequestSecurityMiddleware
+import app.repository.models  # noqa: F401
 
 # Setup logger
 logger = logging.getLogger("recoverflow")
-
-# Automatically initialize database tables on startup if in dev/test environment
-try:
-    Base.metadata.create_all(bind=engine)
-except Exception as exc:
-    logger.warning("Could not auto-create tables: %s", exc)
 
 # Parse ALLOWED_ORIGINS environment variable
 raw_origins: str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
@@ -33,7 +28,16 @@ app: FastAPI = FastAPI(
     description="Autonomous Revenue Recovery System API - Production Security Boundary",
 )
 
+
+@app.on_event("startup")
+def startup_event():
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as exc:
+        logger.warning("Could not auto-create tables: %s", exc)
+
 app.add_middleware(RequestSecurityMiddleware)
+
 
 app.add_middleware(
     CORSMiddleware,
