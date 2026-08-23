@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Sidebar } from '../components/Sidebar';
-import { Header } from '../components/Header';
+import { PageShell } from '../components/PageShell';
 import { StatusBadge } from '../components/StatusBadge';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { getOperationsWorkers, WorkerItem } from '../lib/api';
-import { Server, Activity, Cpu, HardDrive, ShieldAlert, Power } from 'lucide-react';
+import { Server, Activity, Cpu, Power } from 'lucide-react';
 
 export default function WorkersPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [workers, setWorkers] = useState<WorkerItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,94 +37,87 @@ export default function WorkersPage() {
   };
 
   return (
-    <div className="app-layout">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      <div className="main-content">
-        <Header
-          title="Worker Queue Nodes"
-          subtitle="Distributed recovery worker registry & heartbeat monitoring"
-          onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
-        />
-
-        <main className="page-container space-y-6">
-          {/* Top Summary Bar */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="fintech-card p-5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-semibold text-slate-500 uppercase">Active Worker Nodes</span>
-                <div className="text-2xl font-bold brand-font text-slate-900 mt-1">{workers.length} Nodes</div>
-              </div>
-              <div className="p-3 rounded-xl bg-purple-50 text-purple-600">
-                <Server className="w-5 h-5" />
-              </div>
+    <PageShell
+      title="Worker Queue Nodes"
+      subtitle="Distributed recovery worker registry & heartbeat monitoring"
+    >
+      <div className="space-y-6">
+        {/* Top Summary Bar */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="rf-card p-5 flex items-center justify-between">
+            <div>
+              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Active Worker Nodes</span>
+              <div className="text-[22px] font-bold brand-font text-slate-900 mt-1">{workers.length} Nodes</div>
             </div>
-
-            <div className="fintech-card p-5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-semibold text-slate-500 uppercase">Queue Heartbeat</span>
-                <div className="text-2xl font-bold brand-font text-emerald-600 mt-1">Healthy</div>
-              </div>
-              <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600">
-                <Activity className="w-5 h-5" />
-              </div>
-            </div>
-
-            <div className="fintech-card p-5 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-semibold text-slate-500 uppercase">Worker Protocol</span>
-                <div className="text-2xl font-bold brand-font text-sky-600 mt-1">v1.0.0</div>
-              </div>
-              <div className="p-3 rounded-xl bg-sky-50 text-sky-600">
-                <Cpu className="w-5 h-5" />
-              </div>
+            <div className="p-2.5 rounded-xl bg-purple-50 text-purple-600">
+              <Server className="w-5 h-5" />
             </div>
           </div>
 
-          {/* Worker Node Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {workers.map((w) => (
-              <div key={w.worker_id} className="fintech-card p-6 flex flex-col justify-between space-y-4">
-                <div className="flex items-start justify-between border-b border-slate-100 pb-3">
-                  <div>
-                    <div className="font-bold text-base text-slate-900">{w.worker_id}</div>
-                    <div className="text-xs font-mono text-slate-500">{w.hostname}</div>
-                  </div>
-                  <StatusBadge status={w.status} size="md" />
-                </div>
+          <div className="rf-card p-5 flex items-center justify-between">
+            <div>
+              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Queue Heartbeat</span>
+              <div className="text-[22px] font-bold brand-font text-emerald-600 mt-1">Healthy</div>
+            </div>
+            <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600">
+              <Activity className="w-5 h-5" />
+            </div>
+          </div>
 
-                <div className="space-y-2 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Process ID:</span>
-                    <span className="font-mono font-semibold text-slate-800">{w.process_id}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Last Heartbeat:</span>
-                    <span className="font-medium text-slate-700">
-                      {new Date(w.last_heartbeat_at).toLocaleTimeString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Node Capabilities:</span>
-                    <span className="font-bold text-sky-600">{w.capabilities.length} Capabilities</span>
-                  </div>
-                </div>
+          <div className="rf-card p-5 flex items-center justify-between">
+            <div>
+              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Worker Protocol</span>
+              <div className="text-[22px] font-bold brand-font text-cyan-600 mt-1">v1.0.0</div>
+            </div>
+            <div className="p-2.5 rounded-xl bg-cyan-50 text-cyan-600">
+              <Cpu className="w-5 h-5" />
+            </div>
+          </div>
+        </div>
 
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[11px] text-slate-400 font-mono">Lease Auto-renew</span>
-                  {w.status !== 'DRAINING' && (
-                    <button
-                      onClick={() => handleDrainClick(w.worker_id)}
-                      className="btn btn-secondary btn-sm text-[11px] text-rose-600 border-rose-200 hover:bg-rose-50"
-                    >
-                      <Power className="w-3 h-3" /> Drain Worker
-                    </button>
-                  )}
+        {/* Worker Node Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {workers.map((w) => (
+            <div key={w.worker_id} className="rf-card p-6 flex flex-col justify-between space-y-4">
+              <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <div className="font-bold text-[14px] text-slate-900">{w.worker_id}</div>
+                  <div className="text-[11px] font-mono text-slate-400">{w.hostname}</div>
+                </div>
+                <StatusBadge status={w.status} size="md" />
+              </div>
+
+              <div className="space-y-2 text-[12px]">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Process ID:</span>
+                  <span className="font-mono font-semibold text-slate-800">{w.process_id}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Last Heartbeat:</span>
+                  <span className="font-medium text-slate-700">
+                    {new Date(w.last_heartbeat_at).toLocaleTimeString()}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Capabilities:</span>
+                  <span className="font-bold text-cyan-600">{w.capabilities.length} active</span>
                 </div>
               </div>
-            ))}
-          </div>
-        </main>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                <span className="text-[11px] text-slate-400 font-mono">Lease Auto-renew</span>
+                {w.status !== 'DRAINING' && (
+                  <button
+                    onClick={() => handleDrainClick(w.worker_id)}
+                    className="rf-btn rf-btn-secondary rf-btn-xs text-rose-600 border-rose-200 hover:bg-rose-50"
+                  >
+                    <Power className="w-3 h-3" /> Drain Worker
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
 
         <ConfirmDialog
           isOpen={dialogOpen}
@@ -138,6 +129,6 @@ export default function WorkersPage() {
           onCancel={() => setDialogOpen(false)}
         />
       </div>
-    </div>
+    </PageShell>
   );
 }

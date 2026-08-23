@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Sidebar } from '../components/Sidebar';
-import { Header } from '../components/Header';
+import { PageShell } from '../components/PageShell';
 import { StatusBadge } from '../components/StatusBadge';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { getOperationsJobs, retryJob, JobItem } from '../lib/api';
-import { Layers, RefreshCw, AlertOctagon, RotateCcw, Clock, PlayCircle, CheckCircle2 } from 'lucide-react';
+import { RefreshCw, AlertOctagon, RotateCcw, Clock, PlayCircle, CheckCircle2 } from 'lucide-react';
 
 export default function JobsPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [jobs, setJobs] = useState<JobItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
@@ -53,131 +51,124 @@ export default function JobsPage() {
   };
 
   return (
-    <div className="app-layout">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      <div className="main-content">
-        <Header
-          title="Recovery Jobs & Queue"
-          subtitle="Durable recovery job queue infrastructure & lease monitoring"
-          onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
-        />
-
-        <main className="page-container space-y-6">
-          {/* Top Queue Depth KPI Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="fintech-card p-4 flex items-center justify-between">
-              <div>
-                <div className="text-xs font-semibold text-slate-500 uppercase">Queued Jobs</div>
-                <div className="text-2xl font-bold brand-font text-slate-900 mt-1">{statusCounts.QUEUED}</div>
-              </div>
-              <div className="p-3 rounded-xl bg-amber-50 text-amber-600">
-                <Clock className="w-5 h-5" />
-              </div>
+    <PageShell
+      title="Recovery Jobs & Queue"
+      subtitle="Durable recovery job queue infrastructure & lease monitoring"
+    >
+      <div className="space-y-4">
+        {/* Top Queue Depth KPI Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="rf-card p-4 flex items-center justify-between">
+            <div>
+              <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Queued Jobs</div>
+              <div className="text-[22px] font-bold brand-font font-tabular text-slate-900 mt-1">{statusCounts.QUEUED}</div>
             </div>
-
-            <div className="fintech-card p-4 flex items-center justify-between">
-              <div>
-                <div className="text-xs font-semibold text-slate-500 uppercase">Active Running</div>
-                <div className="text-2xl font-bold brand-font text-sky-600 mt-1">{statusCounts.RUNNING}</div>
-              </div>
-              <div className="p-3 rounded-xl bg-sky-50 text-sky-600">
-                <PlayCircle className="w-5 h-5 animate-pulse" />
-              </div>
-            </div>
-
-            <div className="fintech-card p-4 flex items-center justify-between">
-              <div>
-                <div className="text-xs font-semibold text-slate-500 uppercase">Succeeded</div>
-                <div className="text-2xl font-bold brand-font text-emerald-600 mt-1">{statusCounts.SUCCEEDED}</div>
-              </div>
-              <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600">
-                <CheckCircle2 className="w-5 h-5" />
-              </div>
-            </div>
-
-            <div className="fintech-card p-4 flex items-center justify-between">
-              <div>
-                <div className="text-xs font-semibold text-slate-500 uppercase">Dead-Letter Queue</div>
-                <div className="text-2xl font-bold brand-font text-rose-600 mt-1">{statusCounts.DEAD_LETTER}</div>
-              </div>
-              <div className="p-3 rounded-xl bg-rose-50 text-rose-600">
-                <AlertOctagon className="w-5 h-5" />
-              </div>
+            <div className="p-2 rounded-lg bg-amber-50 text-amber-600">
+              <Clock className="w-4 h-4" />
             </div>
           </div>
 
-          {/* Filter Bar */}
-          <div className="fintech-card p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500 font-semibold"
-              >
-                <option value="">All Job Statuses</option>
-                <option value="QUEUED">QUEUED</option>
-                <option value="RUNNING">RUNNING</option>
-                <option value="SUCCEEDED">SUCCEEDED</option>
-                <option value="FAILED">FAILED</option>
-                <option value="DEAD_LETTER">DEAD LETTER</option>
-              </select>
+          <div className="rf-card p-4 flex items-center justify-between">
+            <div>
+              <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Active Running</div>
+              <div className="text-[22px] font-bold brand-font font-tabular text-cyan-600 mt-1">{statusCounts.RUNNING}</div>
             </div>
-
-            <button className="btn btn-secondary btn-sm">
-              <RotateCcw className="w-3.5 h-3.5" /> Recover Expired Leases
-            </button>
+            <div className="p-2 rounded-lg bg-cyan-50 text-cyan-600">
+              <PlayCircle className="w-4 h-4" />
+            </div>
           </div>
 
-          {/* Jobs Table */}
-          <div className="fintech-card overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50/70 text-slate-500 font-semibold uppercase text-[10px] tracking-wider">
-                    <th className="py-3 px-4">Job ID</th>
-                    <th className="py-3 px-4">Job Type</th>
-                    <th className="py-3 px-4">Case ID</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4">Priority</th>
-                    <th className="py-3 px-4">Attempt #</th>
-                    <th className="py-3 px-4">Worker Node</th>
-                    <th className="py-3 px-4 text-right">Action</th>
+          <div className="rf-card p-4 flex items-center justify-between">
+            <div>
+              <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Succeeded</div>
+              <div className="text-[22px] font-bold brand-font font-tabular text-emerald-600 mt-1">{statusCounts.SUCCEEDED}</div>
+            </div>
+            <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+          </div>
+
+          <div className="rf-card p-4 flex items-center justify-between">
+            <div>
+              <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Dead-Letter Queue</div>
+              <div className="text-[22px] font-bold brand-font font-tabular text-rose-600 mt-1">{statusCounts.DEAD_LETTER}</div>
+            </div>
+            <div className="p-2 rounded-lg bg-rose-50 text-rose-600">
+              <AlertOctagon className="w-4 h-4" />
+            </div>
+          </div>
+        </div>
+
+        {/* Filter Bar */}
+        <div className="rf-card p-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-[6px] text-[12px] bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-cyan-400 font-semibold text-slate-700"
+            >
+              <option value="">All Job Statuses</option>
+              <option value="QUEUED">QUEUED</option>
+              <option value="RUNNING">RUNNING</option>
+              <option value="SUCCEEDED">SUCCEEDED</option>
+              <option value="FAILED">FAILED</option>
+              <option value="DEAD_LETTER">DEAD LETTER</option>
+            </select>
+          </div>
+
+          <button className="rf-btn rf-btn-secondary rf-btn-sm">
+            <RotateCcw className="w-3.5 h-3.5" /> Recover Expired Leases
+          </button>
+        </div>
+
+        {/* Jobs Table */}
+        <div className="rf-card overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="rf-table">
+              <thead>
+                <tr>
+                  <th>Job ID</th>
+                  <th>Job Type</th>
+                  <th>Case ID</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th>Attempt #</th>
+                  <th>Worker Node</th>
+                  <th className="text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {jobs.map((j) => (
+                  <tr key={j.job_id}>
+                    <td className="font-mono font-semibold text-[12px] text-slate-900">{j.job_id}</td>
+                    <td className="font-mono text-[11px] text-slate-600">{j.job_type}</td>
+                    <td className="font-mono text-[11px] text-slate-500">{j.case_id}</td>
+                    <td>
+                      <StatusBadge status={j.status} size="sm" />
+                    </td>
+                    <td className="font-bold text-[12px] text-slate-800">{j.priority}</td>
+                    <td className="font-medium text-[12px] text-slate-700 font-tabular">
+                      {j.attempt_number} / {j.max_attempts}
+                    </td>
+                    <td className="font-mono text-[11px] text-slate-500">{j.worker || '—'}</td>
+                    <td className="text-right">
+                      {j.status === 'DEAD_LETTER' || j.status === 'FAILED' ? (
+                        <button
+                          onClick={() => handleTriggerRetry(j.job_id)}
+                          className="rf-btn rf-btn-primary rf-btn-xs"
+                        >
+                          <RefreshCw className="w-3 h-3" /> Retry Job
+                        </button>
+                      ) : (
+                        <span className="text-slate-400 font-mono text-[11px]">Normal</span>
+                      )}
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {jobs.map((j) => (
-                    <tr key={j.job_id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3 px-4 font-mono font-semibold text-slate-900">{j.job_id}</td>
-                      <td className="py-3 px-4 font-mono text-[11px] text-slate-700">{j.job_type}</td>
-                      <td className="py-3 px-4 font-mono text-slate-500">{j.case_id}</td>
-                      <td className="py-3 px-4">
-                        <StatusBadge status={j.status} size="sm" />
-                      </td>
-                      <td className="py-3 px-4 font-bold text-slate-800">{j.priority}</td>
-                      <td className="py-3 px-4 font-medium text-slate-700">
-                        {j.attempt_number} / {j.max_attempts}
-                      </td>
-                      <td className="py-3 px-4 font-mono text-slate-500">{j.worker || '—'}</td>
-                      <td className="py-3 px-4 text-right">
-                        {j.status === 'DEAD_LETTER' || j.status === 'FAILED' ? (
-                          <button
-                            onClick={() => handleTriggerRetry(j.job_id)}
-                            className="btn btn-primary btn-sm text-[11px]"
-                          >
-                            <RefreshCw className="w-3 h-3" /> Retry Job
-                          </button>
-                        ) : (
-                          <span className="text-slate-400 font-mono text-[11px]">Normal</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </main>
+        </div>
       </div>
 
       {/* Confirmation Modal */}
@@ -190,6 +181,6 @@ export default function JobsPage() {
         onConfirm={handleConfirmRetry}
         onCancel={() => setDialogOpen(false)}
       />
-    </div>
+    </PageShell>
   );
 }
