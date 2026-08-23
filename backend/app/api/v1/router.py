@@ -658,8 +658,75 @@ def get_execution_details(
 
 
 # ============================================================================
-# PREVIOUS CASE & PAYMENT ENDPOINTS (PRESERVED)
+# PREVIOUS CASE & PAYMENT ENDPOINTS (PRESERVED & EXPANDED)
 # ============================================================================
+
+@api_v1_router.get("/recovery/cases")
+def list_recovery_cases(
+    state: Optional[str] = Query(None),
+    limit: int = Query(50, ge=1, le=500),
+    db: Session = Depends(get_db),
+) -> Dict[str, Any]:
+    """Read-only endpoint listing recovery cases."""
+    query = db.query(RecoveryCaseModel)
+    if state:
+        query = query.filter(RecoveryCaseModel.state == state.upper())
+    cases = query.order_by(RecoveryCaseModel.created_at.desc()).limit(limit).all()
+
+    payment_ids = [c.payment_id for c in cases if c.payment_id]
+    customer_ids = [c.customer_id for c in cases if c.customer_id]
+
+    payments = {p.id: p for p in db.query(PaymentModel).filter(PaymentModel.id.in_(payment_ids)).all()} if payment_ids else {}
+    customers = {c.id: c for c in db.query(CustomerModel).filter(CustomerModel.id.in_(customer_ids)).all()} if customer_ids else {}
+
+    items = []
+    for c in cases:
+        p_obj = payments.get(c.payment_id)
+        c_obj = customers.get(c.customer_id)
+        amt = float(p_obj.amount) if p_obj and p_obj.amount else 0.0
+        items.append({
+            "case_id": c.id,
+            "payment_id": c.payment_id,
+            "customer_id": c.customer_id,
+            "customer_name": f"Cust-{c.customer_id[-6:]}" if c.customer_id else "Unknown",
+            "amount": amt,
+            "currency": p_obj.currency if p_obj else "INR",
+            "failure_reason": p_obj.failure_code if p_obj else "BANK_TIMEOUT",
+            "state": c.state,
+            "attempt_count": c.attempt_count,
+            "priority": c.priority,
+            "created_at": c.created_at.isoformat() if c.created_at else None,
+            "updated_at": c.updated_at.isoformat() if c.updated_at else None,
+        })
+    return {"total": len(items), "cases": items}
+
+
+@api_v1_router.get("/payments")
+def list_payments(
+    status: Optional[str] = Query(None),
+    limit: int = Query(50, ge=1, le=500),
+    db: Session = Depends(get_db),
+) -> Dict[str, Any]:
+    """Read-only endpoint listing payment transactions."""
+    query = db.query(PaymentModel)
+    if status:
+        query = query.filter(PaymentModel.status == status.upper())
+    payments = query.order_by(PaymentModel.created_at.desc()).limit(limit).all()
+
+    items = []
+    for p_obj in payments:
+        items.append({
+            "payment_id": p_obj.id,
+            "customer_id": p_obj.customer_id,
+            "amount": float(p_obj.amount) if p_obj.amount else 0.0,
+            "currency": p_obj.currency,
+            "status": p_obj.status,
+            "failure_code": p_obj.failure_code,
+            "provider": getattr(p_obj, "provider", "razorpay"),
+            "created_at": p_obj.created_at.isoformat() if p_obj.created_at else None,
+        })
+    return {"total": len(items), "payments": items}
+
 
 @api_v1_router.get("/recovery/cases/{case_id}")
 def get_recovery_case(
