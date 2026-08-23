@@ -45,8 +45,8 @@ export default function LandingPage() {
             <span>Autonomous Payment Recovery Platform • Phase 2B/2C Ready</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold brand-font tracking-tight text-white leading-tight">
-            Payments Fail.{' '}
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold brand-font tracking-tight leading-tight">
+            <span className="text-slate-50">Payments Fail.</span>{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-emerald-400 to-teal-300">
               Revenue Shouldn't.
             </span>
