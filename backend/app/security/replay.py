@@ -83,9 +83,21 @@ class ReplayProtectionService:
         store: Optional[ReplayProtectionStore] = None,
         tolerance_seconds: Optional[int] = None,
     ) -> None:
-        self.config = get_security_config()
         self.store = store or InMemoryReplayProtectionStore()
-        self.tolerance_seconds = tolerance_seconds or self.config.webhook_timestamp_tolerance_seconds
+        self._explicit_tolerance = tolerance_seconds
+
+    @property
+    def config(self):
+        return get_security_config()
+
+    @property
+    def tolerance_seconds(self) -> int:
+        if self._explicit_tolerance is not None:
+            return self._explicit_tolerance
+        try:
+            return self.config.webhook_timestamp_tolerance_seconds
+        except Exception:
+            return 300
 
     def check_and_record(
         self, signature_or_id: str, timestamp: Optional[float] = None

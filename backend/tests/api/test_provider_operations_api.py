@@ -2,8 +2,10 @@ import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 
+import os
+from app.security.config import DEV_OPERATIONS_KEY_DEFAULT
 client = TestClient(app)
-VALID_KEY = "test_ops_key_12345"
+VALID_KEY = os.getenv("RECOVERFLOW_OPERATIONS_KEY", DEV_OPERATIONS_KEY_DEFAULT)
 
 
 def test_get_provider_health_api():

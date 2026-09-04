@@ -51,7 +51,7 @@ class RecoveryCase:
     case_id: str
     payment_id: str
     customer_id: str
-    amount_at_risk: Decimal
+    amount_at_risk: Decimal = Decimal("100.00")
     state: CaseState = CaseState.DETECTED
     priority: CasePriority = CasePriority.MEDIUM
     detected_at: datetime = field(default_factory=datetime.now)

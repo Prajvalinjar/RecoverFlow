@@ -1,5 +1,8 @@
+print("IMPORT START", flush=True)
+
 import os
 import logging
+import threading
 from typing import Dict, List
 from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import JSONResponse
@@ -13,6 +16,8 @@ from app.security.config import SecurityConfigurationError
 from app.security.request_security import RequestSecurityMiddleware
 import app.repository.models  # noqa: F401
 
+print("IMPORT COMPLETE", flush=True)
+
 # Setup logger
 logger = logging.getLogger("recoverflow")
 
@@ -21,6 +26,8 @@ raw_origins: str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://12
 allowed_origins: List[str] = [
     origin.strip() for origin in raw_origins.split(",") if origin.strip()
 ]
+
+print("APP CREATION START", flush=True)
 
 app: FastAPI = FastAPI(
     title="RecoverFlow API",
@@ -31,10 +38,34 @@ app: FastAPI = FastAPI(
 
 @app.on_event("startup")
 def startup_event():
-    try:
-        Base.metadata.create_all(bind=engine)
-    except Exception as exc:
-        logger.warning("Could not auto-create tables: %s", exc)
+    print("STARTUP START", flush=True)
+
+    # 1. Non-blocking database table verification
+    def _init_db_tables():
+        try:
+            Base.metadata.create_all(bind=engine)
+            logger.info("Database tables verified.")
+        except Exception as exc:
+            logger.warning("Could not auto-create tables: %s", exc)
+
+    threading.Thread(target=_init_db_tables, daemon=True, name="db-init-worker").start()
+
+    # 2. Background worker startup (non-blocking, starts after app startup)
+    def _init_background_worker():
+        if os.getenv("RECOVERFLOW_ENABLE_WORKER", "false").lower() in ("true", "1", "yes"):
+            try:
+                from app.jobs.worker import RecoveryWorker
+                from app.database.connection import SessionLocal
+                worker = RecoveryWorker(worker_id=f"worker_auto_{os.getpid()}")
+                with SessionLocal() as session:
+                    worker.start(session=session)
+                logger.info("Background recovery worker started: %s", worker.worker_id)
+            except Exception as exc:
+                logger.warning("Background worker failed to start: %s", exc)
+
+    threading.Thread(target=_init_background_worker, daemon=True, name="recovery-worker-starter").start()
+
+    print("STARTUP COMPLETE", flush=True)
 
 app.add_middleware(RequestSecurityMiddleware)
 
@@ -49,6 +80,8 @@ app.add_middleware(
 
 # Mount V1 Router
 app.include_router(api_v1_router)
+
+print("APP CREATION COMPLETE", flush=True)
 
 
 # Global Exception Handlers

@@ -2,7 +2,7 @@ from enum import Enum
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Dict, Optional, List, Set, Any
-from threading import Lock
+from threading import RLock
 import logging
 
 from app.execution.capabilities import ProviderCapability, capability_registry
@@ -46,7 +46,7 @@ class ProviderLifecycleManager:
     """Deterministic provider lifecycle manager."""
 
     _instance = None
-    _lock = Lock()
+    _lock = RLock()
 
     def __new__(cls):
         with cls._lock:

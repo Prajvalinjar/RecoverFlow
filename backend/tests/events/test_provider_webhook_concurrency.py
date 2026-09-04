@@ -19,12 +19,17 @@ def process_event_worker(event_data, sec_ctx_data):
         session.close()
 
 
+import uuid
+
+
 def test_concurrent_duplicate_webhooks():
+    uid = uuid.uuid4().hex[:8]
+    event_id = f"evt_conc_{uid}"
     event_data = {
-        "event_id": "evt_conc_300",
+        "event_id": event_id,
         "event_type": "PAYMENT_FAILURE_RECEIVED",
-        "payment_id": "pay_conc_300",
-        "customer_id": "cust_conc_300",
+        "payment_id": f"pay_conc_{uid}",
+        "customer_id": f"cust_conc_{uid}",
         "amount": Decimal("250.00"),
         "currency": "INR",
         "failure_code": "INSUFFICIENT_FUNDS",
@@ -32,9 +37,9 @@ def test_concurrent_duplicate_webhooks():
     }
     sec_ctx_data = {
         "provider": "razorpay",
-        "event_id": "evt_conc_300",
+        "event_id": event_id,
         "authenticated": True,
-        "correlation_id": "corr_conc_300",
+        "correlation_id": f"corr_conc_{uid}",
     }
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:

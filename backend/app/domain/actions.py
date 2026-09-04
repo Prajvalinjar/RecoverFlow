@@ -21,3 +21,7 @@ class CandidateRecoveryAction:
     def __post_init__(self) -> None:
         if self.delay_hours < 0:
             raise ValueError("delay_hours cannot be negative.")
+
+
+# Backward compatibility alias
+Action = CandidateRecoveryAction

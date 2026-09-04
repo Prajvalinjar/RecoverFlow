@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Set, Dict, Optional, List
-from threading import Lock
+from threading import RLock
 import logging
 
 from app.domain.actions import ActionType
@@ -32,7 +32,7 @@ class ProviderCapabilityRegistry:
     """Thread-safe, provider-neutral capability registry."""
 
     _instance = None
-    _lock = Lock()
+    _lock = RLock()
 
     def __new__(cls):
         with cls._lock:

@@ -1,0 +1,1759 @@
+/* ==========================================================================
+   RecoverFlow Product Landing Page — CSS Module (Phase 10A Final Visual Polish)
+   Design Tokens: globals.css (--rf-* variables)
+   Visual Principle:
+     - Premium fintech infrastructure marketing page
+     - Intentional whitespace with strong visual anchors
+     - Tonal Rhythm:
+       Hero (Warm off-white #F7F9F8 + Recovery lifecycle diagram)
+       → 01 / The Problem (Cool off-white #F1F5F5 + Transformation flow)
+       → 02 / Lifecycle (Crisp White #FFFFFF + Connected 8-stage rail)
+       → 03 / AI Boundary (Deep Navy #061A2B + 3-panel architecture)
+       → 04 / Outcomes (Warm off-white #F7F9F8 + Readout matrix)
+       → 05 / Operations (Cool off-white #F1F5F5 + Telemetry table)
+       → 06 / Product Preview (Crisp White #FFFFFF + Aggregate windows)
+       → 07 / Reconciliation (Warm off-white #F7F9F8 + Verification rail)
+       → 08 / Final CTA (Deep Navy #061A2B)
+       → Footer (Deepest Navy #04131D)
+   ========================================================================== */
+
+/* ---- Layout Shell ---- */
+.landingPage {
+  min-height: 100vh;
+  background-color: var(--rf-canvas);
+  color: var(--rf-text-primary);
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Public Navigation Header ---- */
+.navHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(247, 249, 248, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--rf-border);
+  transition: background 200ms ease;
+}
+
+.navInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 58px;
+}
+
+.navBrand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--rf-text-primary);
+}
+
+.navBrandName {
+  font-size: 16.5px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  color: var(--rf-navy-primary);
+}
+
+.navBrandAccent {
+  color: var(--rf-emerald);
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  list-style: none;
+}
+
+.navLink {
+  font-size: 13.5px;
+  font-weight: 550;
+  color: var(--rf-text-secondary);
+  text-decoration: none;
+  transition: color 150ms ease;
+  letter-spacing: -0.01em;
+}
+
+.navLink:hover {
+  color: var(--rf-text-primary);
+}
+
+.navCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: var(--rf-navy-primary);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 650;
+  border-radius: var(--rf-radius-control);
+  text-decoration: none;
+  transition: background 150ms ease, box-shadow 150ms ease;
+  letter-spacing: -0.01em;
+  box-shadow: 0 1px 4px rgba(16, 42, 67, 0.12);
+}
+
+.navCta:hover {
+  background: var(--rf-navy-deep);
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.2);
+}
+
+.mobileMenuBtn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--rf-text-primary);
+}
+
+.mobileMenu {
+  display: none;
+  position: fixed;
+  top: 58px;
+  left: 0;
+  right: 0;
+  background: var(--rf-surface);
+  border-bottom: 1px solid var(--rf-border);
+  padding: 16px 24px;
+  z-index: 99;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(16, 42, 67, 0.08);
+}
+
+.mobileMenu.open {
+  display: flex;
+}
+
+.mobileMenuLink {
+  font-size: 14px;
+  font-weight: 550;
+  color: var(--rf-text-secondary);
+  text-decoration: none;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rf-border-subtle);
+  transition: color 150ms ease;
+}
+
+.mobileMenuLink:last-child {
+  border-bottom: none;
+}
+
+.mobileMenuLink:hover {
+  color: var(--rf-text-primary);
+}
+
+/* ---- Section Structural Wrappers ---- */
+.sectionInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 32px;
+  position: relative;
+}
+
+/* ---- Structural Editorial Section Header ---- */
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+.sectionMetaRail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rf-border);
+  margin-bottom: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--rf-text-muted);
+}
+
+.sectionNumber {
+  color: var(--rf-cyan-text);
+  font-weight: 750;
+}
+
+.sectionHeading {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--rf-navy-primary);
+  max-width: 620px;
+}
+
+.sectionBody {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--rf-text-secondary);
+  max-width: 600px;
+}
+
+/* ==========================================================================
+   1. HERO SECTION (Warm off-white #F7F9F8 + Recovery Lifecycle Diagram)
+   ========================================================================== */
+.heroWrapper {
+  background-color: var(--rf-canvas);
+  background-image:
+    linear-gradient(to right, rgba(16, 42, 67, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(16, 42, 67, 0.03) 1px, transparent 1px),
+    radial-gradient(ellipse at 20% 30%, rgba(21, 151, 211, 0.05) 0%, transparent 55%);
+  background-size: 48px 48px, 48px 48px, 100% 100%;
+  border-bottom: 1px solid var(--rf-border);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle corner frame accents for hero */
+.heroWrapper::before,
+.heroWrapper::after {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-color: rgba(21, 151, 211, 0.12);
+  border-style: solid;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.heroWrapper::before {
+  top: 72px;
+  left: 32px;
+  border-width: 1px 0 0 1px;
+}
+
+.heroWrapper::after {
+  bottom: 24px;
+  right: 32px;
+  border-width: 0 1px 1px 0;
+}
+
+.heroInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 136px 32px 88px 32px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 48px;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.heroEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  color: var(--rf-cyan-text);
+  text-transform: uppercase;
+  background: rgba(21, 151, 211, 0.07);
+  border: 1px solid rgba(21, 151, 211, 0.2);
+  padding: 5px 12px;
+  border-radius: var(--rf-radius-badge);
+  width: fit-content;
+}
+
+.heroEyebrowDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rf-cyan);
+  box-shadow: 0 0 6px rgba(21, 151, 211, 0.5);
+  animation: dotPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(21, 151, 211, 0.5); }
+  50% { opacity: 0.6; box-shadow: 0 0 3px rgba(21, 151, 211, 0.3); }
+}
+
+.heroHeadline {
+  font-size: 54px;
+  font-weight: 850;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  color: var(--rf-navy-primary);
+}
+
+.heroHeadlineAccent {
+  color: var(--rf-emerald);
+}
+
+.heroSub {
+  font-size: 16.5px;
+  line-height: 1.65;
+  color: var(--rf-text-secondary);
+  max-width: 480px;
+}
+
+.heroCtas {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+/* ---- Hero Proof Metrics (compact inline row) ---- */
+.heroProofMetrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--rf-border);
+  border: 1px solid var(--rf-border);
+  border-radius: var(--rf-radius-control);
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.heroProofItem {
+  background: var(--rf-surface);
+  padding: 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.heroProofValue {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.heroProofLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--rf-text-muted);
+  text-transform: uppercase;
+}
+
+/* ---- CTA Buttons ---- */
+.ctaPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 26px;
+  background: var(--rf-emerald);
+  color: #ffffff;
+  font-size: 14.5px;
+  font-weight: 650;
+  border-radius: var(--rf-radius-control);
+  text-decoration: none;
+  transition: background 150ms ease, transform 80ms ease, box-shadow 150ms ease;
+  letter-spacing: -0.01em;
+  box-shadow: 0 2px 8px rgba(0, 168, 120, 0.24);
+}
+
+.ctaPrimary:hover {
+  background: var(--rf-emerald-hover);
+  box-shadow: 0 4px 16px rgba(0, 168, 120, 0.32);
+}
+
+.ctaPrimary:active {
+  transform: translateY(1px);
+}
+
+.ctaSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  background: var(--rf-surface);
+  color: var(--rf-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--rf-radius-control);
+  text-decoration: none;
+  border: 1px solid var(--rf-border);
+  transition: background 150ms ease, border-color 150ms ease;
+  letter-spacing: -0.01em;
+}
+
+.ctaSecondary:hover {
+  background: var(--rf-surface-subtle);
+  border-color: var(--rf-text-muted);
+}
+
+/* ---- Hero Recovery Lifecycle Visual (Right Column) ---- */
+.heroLifecycleVisual {
+  background: var(--rf-surface);
+  border: 1px solid var(--rf-border);
+  border-radius: var(--rf-radius-surface);
+  padding: 0;
+  box-shadow:
+    0 4px 24px rgba(16, 42, 67, 0.06),
+    0 1px 3px rgba(16, 42, 67, 0.04);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.heroLifecycleHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--rf-border-subtle);
+  background: var(--rf-canvas);
+}
+
+.heroLifecycleHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--rf-text-muted);
+}
+
+.heroLifecycleHeaderRight {
+  font-size: 10.5px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+}
+
+.heroLifecycleFlow {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+  position: relative;
+}
+
+/* Vertical connector line */
+.heroLifecycleFlow::before {
+  content: '';
+  position: absolute;
+  left: 35px;
+  top: 30px;
+  bottom: 30px;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    var(--rf-danger) 0%,
+    var(--rf-danger) 8%,
+    var(--rf-cyan) 20%,
+    var(--rf-cyan) 35%,
+    var(--rf-violet) 45%,
+    var(--rf-violet) 55%,
+    var(--rf-emerald) 65%,
+    var(--rf-emerald) 100%
+  );
+  border-radius: 1px;
+  opacity: 0.35;
+}
+
+.lifecycleStageRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 20px;
+  position: relative;
+  z-index: 1;
+  transition: background 120ms ease;
+}
+
+.lifecycleStageRow:hover {
+  background: var(--rf-surface-subtle);
+}
+
+.lifecycleStageIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid;
+  position: relative;
+  z-index: 2;
+}
+
+.lifecycleStageInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.lifecycleStageName {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rf-navy-primary);
+  letter-spacing: -0.01em;
+}
+
+.lifecycleStageMeta {
+  font-size: 10.5px;
+  color: var(--rf-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lifecycleStageTag {
+  font-size: 9.5px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: var(--rf-radius-badge);
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.heroLifecycleFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid var(--rf-border-subtle);
+  background: var(--rf-canvas);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--rf-text-muted);
+  letter-spacing: 0.04em;
+}
+
+/* ==========================================================================
+   2. SECTION 01 / THE PROBLEM (Cool off-white #F1F5F5 + Transformation Flow)
+   ========================================================================== */
+.problemWrapper {
+  background-color: #F1F5F5;
+  border-bottom: 1px solid var(--rf-border);
+}
+
+.transitionRailContainer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: 40px;
+  position: relative;
+  border: 1px solid var(--rf-border);
+  border-radius: var(--rf-radius-surface);
+  overflow: hidden;
+  background: var(--rf-border);
+}
+
+/* Arrow connectors between nodes — CSS-only */
+.transitionRailContainer::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: repeating-linear-gradient(
+    to right,
+    transparent 0px,
+    transparent 8px,
+    var(--rf-border) 8px,
+    var(--rf-border) 12px
+  );
+  z-index: 1;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: none;
+}
+
+.transitionNode {
+  background: var(--rf-surface);
+  border-right: 1px solid var(--rf-border);
+  padding: 26px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.transitionNode:last-child {
+  border-right: none;
+}
+
+.transitionNodeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.transitionNodeNum {
+  font-size: 22px;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.transitionNodeStep {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--rf-text-muted);
+}
+
+.transitionNodeLabel {
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  color: var(--rf-navy-primary);
+  text-transform: uppercase;
+}
+
+.transitionNodeDesc {
+  font-size: 12.5px;
+  color: var(--rf-text-secondary);
+  line-height: 1.5;
+}
+
+/* Flow arrow between nodes */
+.transitionNodeArrow {
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--rf-canvas);
+  border: 1px solid var(--rf-border);
+  border-radius: 50%;
+  z-index: 3;
+  color: var(--rf-text-muted);
+}
+
+/* ==========================================================================
+   3. SECTION 02 / RECOVERY LIFECYCLE (Crisp White #FFFFFF + Connected Rail)
+   ========================================================================== */
+.howWrapper {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid var(--rf-border);
+}
+
+.lifecycleGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--rf-border);
+  border: 1px solid var(--rf-border);
+  border-radius: var(--rf-radius-surface);
+  overflow: hidden;
+  margin-top: 40px;
+}
+
+.lifecycleItem {
+  background: var(--rf-surface);
+  padding: 28px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  transition: background 150ms ease;
+}
+
+.lifecycleItem:hover {
+  background: var(--rf-surface-subtle);
+}
+
+.lifecycleStageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.stageNumber {
+  font-size: 22px;
+  font-weight: 850;
+  color: var(--rf-cyan-text);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.stageSystemTag {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--rf-text-muted);
+}
+
+.stageName {
+  font-size: 15px;
+  font-weight: 750;
+  color: var(--rf-navy-primary);
+  letter-spacing: -0.01em;
+}
+
+.stageDesc {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--rf-text-secondary);
+}
+
+.stageMeta {
+  font-size: 10px;
+  color: var(--rf-text-muted);
+  padding-top: 10px;
+  border-top: 1px solid var(--rf-border-subtle);
+  margin-top: auto;
+  letter-spacing: 0.04em;
+}
+
+/* ==========================================================================
+   4. SECTION 03 / AI & POLICY BOUNDARY (DEEP NAVY #061A2B — 3-Panel Architecture)
+   ========================================================================== */
+.aiWrapper {
+  background-color: #061A2B;
+  color: #FFFFFF;
+  border-bottom: 1px solid #133249;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle architectural grid overlay */
+.aiWrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.aiMetaRail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #133249;
+  margin-bottom: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #8FA6B8;
+}
+
+.aiHeading {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
+  max-width: 620px;
+}
+
+.aiBody {
+  font-size: 16px;
+  line-height: 1.65;
+  color: #8FA6B8;
+  max-width: 640px;
+}
+
+.aiGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  background: #133249;
+  border: 1px solid #133249;
+  border-radius: var(--rf-radius-surface);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  margin-top: 40px;
+}
+
+.aiPanel {
+  padding: 36px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+}
+
+.aiPanelLeft {
+  composes: aiPanel;
+  background: #092237;
+}
+
+.aiPanelCenter {
+  composes: aiPanel;
+  background: #0A2840;
+}
+
+.aiPanelRight {
+  composes: aiPanel;
+  background: #092534;
+}
+
+.aiPanelEyebrow {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.aiPanelHeading {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: #FFFFFF;
+  letter-spacing: -0.015em;
+}
+
+.aiPanelDesc {
+  font-size: 13px;
+  color: #8FA6B8;
+  line-height: 1.55;
+}
+
+.aiPanelAuthority {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--rf-radius-badge);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin-top: 4px;
+  width: fit-content;
+}
+
+.aiPanelLink {
+  font-size: 13px;
+  font-weight: 600;
+  color: #38BDF8;
+  text-decoration: none;
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 150ms ease;
+}
+
+.aiPanelLink:hover {
+  color: #7DD3FC;
+}
+
+/* Architectural Airgap Line */
+.aiAirgapNotice {
+  margin-top: 24px;
+  padding: 14px 20px;
+  background: rgba(19, 50, 73, 0.5);
+  border: 1px solid #133249;
+  border-radius: var(--rf-radius-control);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: #8FA6B8;
+  gap: 12px;
+}
+
+/* ==========================================================================
+   5. SECTION 04 / RECOVERY OUTCOMES (Warm off-white #F7F9F8 + Readout Matrix)
+   ========================================================================== */
+.outcomesWrapper {
+  background-color: var(--rf-canvas);
+  border-bottom: 1px solid var(--rf-border);
+}
+
+.outcomesMatrix {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--rf-border);
+  border: 1px solid var(--rf-border);
+  border-radius: var(--rf-radius-surface);
+  overflow: hidden;
+  margin-top: 40px;
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.03);
+}
+
+.outcomesCell {
+  background: var(--rf-surface);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--rf-text-muted);
+  text-transform: uppercase;
+}
+
+.metricValue {
+  font-size: 34px;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.metricSubtext {
+  font-size: 12px;
+  color: var(--rf-text-muted);
+  margin-top: 2px;
+}
+
+.sandboxTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  color: var(--rf-warning-text);
+  background: var(--rf-warning-surface);
+  border: 1px solid var(--rf-warning-border);
+  border-radius: var(--rf-radius-badge);
+  padding: 2px 8px;
+  margin-top: 8px;
+  width: fit-content;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   6. SECTION 05 / OPERATIONAL CONTROL (Cool off-white #F1F5F5 + Telemetry)
+   ========================================================================== */
+.opsWrapper {
+  background-color: #F1F5F5;
+  border-bottom: 1px solid var(--rf-border);
+}
+
+.opsReadoutTable {
+  background: var(--rf-surface);
+  border: 1px solid var(--rf-border);
+  border-radius: var(--rf-radius-surface);
+  overflow: hidden;
+  margin-top: 40px;
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.03);
+}
+
+.opsReadoutHeader {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 2fr 1fr;
+  padding: 12px 20px;
+  background: var(--rf-canvas);
+  border-bottom: 1px solid var(--rf-border);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--rf-text-muted);
+  letter-spacing: 0.08em;
+}
+
+.opsReadoutRow {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 2fr 1fr;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--rf-border-subtle);
+  align-items: center;
+  font-size: 13px;
+}
+
+.opsReadoutRow:last-child {
+  border-bottom: none;
+}
+
+.opsRowTitle {
+  font-weight: 700;
+  color: var(--rf-navy-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.opsRowState {
+  font-size: 11.5px;
+  font-weight: 750;
+  color: var(--rf-emerald-text);
+}
+
+.opsRowDesc {
+  color: var(--rf-text-secondary);
+  font-size: 12.5px;
+}
+
+.opsRowCategory {
+  font-size: 10.5px;
+  color: var(--rf-text-muted);
+  text-align: right;
+}
+
+.opsCtaBanner {
+  margin-top: 28px;
+  padding: 18px 24px;
+  background: var(--rf-surface);
+  border: 1px solid var(--rf-border);
+  border-radius: var(--rf-radius-surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* ==========================================================================
+   7. SECTION 06 / PRODUCT PREVIEW (Crisp White #FFFFFF + Aggregate Windows)
+   ========================================================================== */
+.previewWrapper {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid var(--rf-border);
+}
+
+.previewFrame {
+  margin-top: 40px;
+  border: 1px solid var(--rf-border);
+  border-radius: var(--rf-radius-surface);
+  overflow: hidden;
+  background: var(--rf-surface);
+  box-shadow: 0 12px 40px rgba(16, 42, 67, 0.07);
+}
+
+.previewBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #071F2E;
+  border-bottom: 1px solid #133249;
+}
+
+.previewDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.previewUrl {
+  margin-left: 12px;
+  font-size: 11px;
+  color: #8FA6B8;
+  letter-spacing: 0.02em;
+}
+
+.previewContent {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  background: var(--rf-canvas);
+}
+
+.previewMetric {
+  padding: 16px;
+  background: var(--rf-surface);
+  border: 1px solid var(--rf-border-subtle);
+  border-radius: var(--rf-radius-control);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.previewMetricLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--rf-text-muted);
+  text-transform: uppercase;
+}
+
+.previewMetricValue {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.previewMetricSub {
+  font-size: 11px;
+  color: var(--rf-text-muted);
+}
+
+/* Aggregate Evaluation Windows */
+.evalWindowsContainer {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  background: var(--rf-surface);
+  border: 1px solid var(--rf-border-subtle);
+  border-radius: var(--rf-radius-control);
+  overflow: hidden;
+}
+
+.evalWindowsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--rf-border-subtle);
+}
+
+.evalWindowsTitle {
+  font-size: 11.5px;
+  font-weight: 750;
+  color: var(--rf-navy-primary);
+  letter-spacing: 0.04em;
+}
+
+.evalWindowsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--rf-border-subtle);
+}
+
+.evalWindow {
+  background: var(--rf-surface);
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.evalWindowPeriod {
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  color: var(--rf-cyan-text);
+  text-transform: uppercase;
+}
+
+.evalWindowStats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.evalWindowRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 12.5px;
+}
+
+.evalWindowRowLabel {
+  color: var(--rf-text-muted);
+  font-weight: 550;
+}
+
+.evalWindowRowValue {
+  font-weight: 750;
+  color: var(--rf-navy-primary);
+}
+
+.evalWindowRate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rf-border-subtle);
+}
+
+.evalWindowRateValue {
+  font-size: 24px;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  color: var(--rf-emerald);
+  line-height: 1;
+}
+
+.evalWindowRateLabel {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--rf-text-muted);
+  text-transform: uppercase;
+}
+
+.evalWindowRevenueRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 12.5px;
+  padding-top: 8px;
+  border-top: 1px solid var(--rf-border-subtle);
+}
+
+.evalWindowRevenueValue {
+  font-weight: 800;
+  color: var(--rf-emerald-text);
+  font-size: 14px;
+}
+
+/* ==========================================================================
+   8. SECTION 07 / RECONCILIATION (Warm off-white #F7F9F8 + Step Rails)
+   ========================================================================== */
+.reconWrapper {
+  background-color: var(--rf-canvas);
+  border-bottom: 1px solid var(--rf-border);
+}
+
+.reconFlow {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  margin-top: 40px;
+  border: 1px solid var(--rf-border);
+  border-radius: var(--rf-radius-surface);
+  overflow: hidden;
+  background: var(--rf-border);
+}
+
+.reconStep {
+  background: var(--rf-surface);
+  border-right: 1px solid var(--rf-border);
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reconStep:last-child {
+  border-right: none;
+}
+
+.reconStepNum {
+  font-size: 10.5px;
+  font-weight: 750;
+  color: var(--rf-cyan-text);
+}
+
+.reconStepLabel {
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  color: var(--rf-navy-primary);
+}
+
+.reconStepMeta {
+  font-size: 11px;
+  color: var(--rf-text-muted);
+}
+
+.reconPrinciple {
+  margin-top: 28px;
+  padding: 20px 24px;
+  background: var(--rf-surface);
+  border: 1px solid var(--rf-border);
+  border-radius: var(--rf-radius-surface);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.03);
+}
+
+.reconPrincipleText {
+  font-size: 14.5px;
+  font-weight: 650;
+  color: var(--rf-navy-primary);
+  letter-spacing: -0.01em;
+}
+
+.reconLinks {
+  display: flex;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+/* ==========================================================================
+   9. SECTION 08 / FINAL CTA (Deep Navy #061A2B)
+   ========================================================================== */
+.finalCtaWrapper {
+  background-color: #061A2B;
+  color: #FFFFFF;
+  border-bottom: 1px solid #133249;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle radial glow */
+.finalCtaWrapper::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 168, 120, 0.06) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.finalCtaInner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 96px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  position: relative;
+  z-index: 1;
+}
+
+.finalCtaHeading {
+  font-size: 44px;
+  font-weight: 850;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  color: #FFFFFF;
+}
+
+.finalCtaBody {
+  font-size: 16px;
+  line-height: 1.65;
+  color: #8FA6B8;
+  max-width: 540px;
+}
+
+.finalCtaButtons {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.ctaPrimaryInverse {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  background: var(--rf-emerald);
+  color: #061A2B;
+  font-size: 14.5px;
+  font-weight: 750;
+  border-radius: var(--rf-radius-control);
+  text-decoration: none;
+  transition: background 150ms ease, transform 80ms ease, box-shadow 150ms ease;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 14px rgba(0, 168, 120, 0.35);
+}
+
+.ctaPrimaryInverse:hover {
+  background: #00C896;
+  box-shadow: 0 6px 20px rgba(0, 168, 120, 0.4);
+}
+
+.ctaPrimaryInverse:active {
+  transform: translateY(1px);
+}
+
+.ctaSecondaryInverse {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 22px;
+  background: transparent;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--rf-radius-control);
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: background 150ms ease, border-color 150ms ease;
+  letter-spacing: -0.01em;
+}
+
+.ctaSecondaryInverse:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* ==========================================================================
+   10. FOOTER (Deepest Navy #04131D)
+   ========================================================================== */
+.footerWrapper {
+  background-color: #04131D;
+  color: #8FA6B8;
+  padding: 40px 0;
+}
+
+.footerInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footerBrand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footerBrandName {
+  font-size: 14.5px;
+  font-weight: 750;
+  color: #FFFFFF;
+}
+
+.footerBrandSub {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #8FA6B8;
+  text-transform: uppercase;
+}
+
+.footerLinks {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  list-style: none;
+}
+
+.footerLink {
+  font-size: 12.5px;
+  font-weight: 550;
+  color: #8FA6B8;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.footerLink:hover {
+  color: #FFFFFF;
+}
+
+.footerCopy {
+  font-size: 11px;
+  color: rgba(143, 166, 184, 0.6);
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS (1440px, 1280px, 1024px, 768px, 390px)
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .heroInner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding-top: 108px;
+    padding-bottom: 64px;
+  }
+
+  .heroHeadline {
+    font-size: 44px;
+  }
+
+  .heroProofMetrics {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .heroWrapper::before,
+  .heroWrapper::after {
+    display: none;
+  }
+
+  .lifecycleGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .aiGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .aiPanelCenter {
+    border-top: 1px solid #133249;
+  }
+
+  .aiPanelRight {
+    border-top: 1px solid #133249;
+  }
+
+  .outcomesMatrix {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .opsReadoutHeader {
+    grid-template-columns: 1.5fr 1fr 2fr;
+  }
+
+  .opsReadoutRow {
+    grid-template-columns: 1.5fr 1fr 2fr;
+  }
+
+  .opsRowCategory {
+    display: none;
+  }
+
+  .previewContent {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .evalWindowsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .reconFlow {
+    grid-template-columns: repeat(3, 1fr);
+    background: var(--rf-border);
+    gap: 1px;
+  }
+
+  .reconStep {
+    border-right: none;
+  }
+
+  .navLinks {
+    display: none;
+  }
+
+  .mobileMenuBtn {
+    display: flex;
+  }
+}
+
+@media (max-width: 768px) {
+  .sectionInner {
+    padding: 56px 20px;
+  }
+
+  .navInner {
+    padding: 0 20px;
+  }
+
+  .heroInner {
+    padding: 92px 20px 48px 20px;
+  }
+
+  .heroHeadline {
+    font-size: 36px;
+  }
+
+  .heroSub {
+    font-size: 15px;
+  }
+
+  .heroCtas {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ctaPrimary,
+  .ctaSecondary {
+    justify-content: center;
+  }
+
+  .heroProofMetrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sectionHeading,
+  .aiHeading {
+    font-size: 28px;
+  }
+
+  .transitionRailContainer {
+    grid-template-columns: 1fr;
+    background: var(--rf-border);
+    gap: 1px;
+  }
+
+  .transitionNode {
+    border-right: none;
+  }
+
+  .transitionNodeArrow {
+    display: none;
+  }
+
+  .lifecycleGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .outcomesMatrix {
+    grid-template-columns: 1fr;
+  }
+
+  .opsReadoutHeader {
+    display: none;
+  }
+
+  .opsReadoutRow {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 14px 16px;
+  }
+
+  .opsRowState {
+    margin-bottom: 2px;
+  }
+
+  .reconFlow {
+    grid-template-columns: 1fr;
+    gap: 1px;
+  }
+
+  .reconStep {
+    border-right: none;
+  }
+
+  .previewContent {
+    grid-template-columns: 1fr;
+  }
+
+  .evalWindowsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .finalCtaHeading {
+    font-size: 30px;
+  }
+
+  .finalCtaButtons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ctaPrimaryInverse,
+  .ctaSecondaryInverse {
+    justify-content: center;
+  }
+
+  .footerInner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .footerLinks {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 390px) {
+  .heroInner {
+    padding: 84px 16px 40px 16px;
+  }
+
+  .sectionInner {
+    padding: 48px 16px;
+  }
+
+  .heroHeadline {
+    font-size: 30px;
+  }
+
+  .heroSub {
+    font-size: 14px;
+  }
+
+  .heroProofMetrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .heroProofValue {
+    font-size: 17px;
+  }
+
+  .heroProofLabel {
+    font-size: 9px;
+  }
+
+  .lifecycleStageRow {
+    padding: 8px 14px;
+    gap: 10px;
+  }
+
+  .lifecycleStageIcon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .lifecycleStageName {
+    font-size: 12px;
+  }
+
+  .lifecycleStageMeta {
+    font-size: 9.5px;
+  }
+
+  .metricValue {
+    font-size: 26px;
+  }
+
+  .sectionHeading,
+  .aiHeading {
+    font-size: 24px;
+  }
+
+  .finalCtaHeading {
+    font-size: 24px;
+  }
+
+  .finalCtaInner {
+    padding: 64px 16px;
+  }
+
+  .evalWindowRateValue {
+    font-size: 20px;
+  }
+
+  .stageNumber {
+    font-size: 18px;
+  }
+
+  .opsCtaBanner {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .navInner {
+    padding: 0 16px;
+  }
+}
+
+/* ---- REDUCED MOTION SUPPORT ---- */
+@media (prefers-reduced-motion: reduce) {
+  .ctaPrimary,
+  .ctaSecondary,
+  .ctaPrimaryInverse,
+  .ctaSecondaryInverse,
+  .lifecycleStageRow,
+  .heroEyebrowDot {
+    transition: none !important;
+    animation: none !important;
+  }
+}

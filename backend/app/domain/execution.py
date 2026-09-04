@@ -39,8 +39,8 @@ class RecoveryExecution:
     case_id: str
     policy_decision_id: str
     action: CandidateRecoveryAction
-    status: ExecutionStatus
     idempotency_key: str
+    status: ExecutionStatus = ExecutionStatus.DISPATCHED
     started_at: datetime = field(default_factory=datetime.now)
     completed_at: Optional[datetime] = None
     provider_reference: Optional[str] = None
