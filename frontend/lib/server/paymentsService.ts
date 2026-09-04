@@ -250,7 +250,7 @@ export async function fetchPaymentsList(): Promise<PaymentsListResponse> {
         totalVolumeByCurrency: currencyVolume,
       },
       payments: mappedPayments,
-      isLive: true,
+      isLive: casesData.isLive,
     };
   }
 

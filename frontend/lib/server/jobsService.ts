@@ -350,11 +350,14 @@ export async function fetchJobsList(): Promise<JobsPageResponse> {
       version: w.version,
     }));
 
+    const metricsRes = await fetchBackendJson<{ data_source?: string }>("/api/v1/operations/metrics", true);
+    const isLive = metricsRes ? metricsRes.data_source === "LIVE_DATABASE" : false;
+
     return {
       queueStatus,
       jobs: mappedJobs,
       workers: mappedWorkers.length > 0 ? mappedWorkers : SANDBOX_WORKERS,
-      isLive: true,
+      isLive,
     };
   }
 

@@ -18,6 +18,8 @@ export interface BackendOperationsMetricsResponse {
   revenue_recovered: string;
   recovery_rate_percent: number;
   average_attempts: number;
+  is_sandbox_baseline?: boolean;
+  data_source?: string;
   telemetry_snapshot?: Record<string, unknown>;
 }
 
@@ -236,7 +238,14 @@ export interface DashboardHeaderMeta {
   lastSyncedText?: string;
 }
 
-export type DataSourceStatus = "LIVE" | "SANDBOX_BASELINE" | "PARTIAL_ERROR" | "UNAVAILABLE";
+export type DataSourceStatus =
+  | "LIVE"
+  | "LIVE_DATABASE"
+  | "SANDBOX_BASELINE"
+  | "SANDBOX_SEED"
+  | "EMPTY_DATABASE"
+  | "PARTIAL_ERROR"
+  | "UNAVAILABLE";
 
 export interface DashboardDataBundle {
   sourceStatus: DataSourceStatus;

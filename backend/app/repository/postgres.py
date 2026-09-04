@@ -77,6 +77,9 @@ class PostgresRecoveryCaseRepository(RecoveryCaseRepository):
             RecoveryCaseModel.state.notin_(["RECOVERED", "ESCALATED", "STOPPED"])
         ).all()
 
+    def list_all_cases(self) -> List[RecoveryCaseModel]:
+        return self.session.query(RecoveryCaseModel).all()
+
 
 class PostgresRecoveryAttemptRepository(RecoveryAttemptRepository):
     def __init__(self, session: Session) -> None:

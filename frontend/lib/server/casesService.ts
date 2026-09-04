@@ -245,10 +245,12 @@ export async function fetchCasesList(): Promise<CasesListResponse> {
       };
     }
 
+    const isLive = metricsRes ? metricsRes.data_source === "LIVE_DATABASE" : false;
+
     return {
       summary,
       cases: mappedCases,
-      isLive: true,
+      isLive,
     };
   }
 
@@ -282,6 +284,7 @@ export async function fetchCaseDetail(caseId: string): Promise<CaseDetailBundle 
       terminal_reason?: string;
       payment?: { amount?: string; currency?: string; status?: string; failure_code?: string };
       customer?: { segment?: string; total_spent?: string };
+      data_source?: string;
     }>(`/api/v1/recovery/cases/${encodeURIComponent(caseId)}`, false),
     fetchBackendJson<{ timeline: Array<{ event_id: string; event_type: string; timestamp?: string; details?: Record<string, unknown> }> }>(
       `/api/v1/recovery/cases/${encodeURIComponent(caseId)}/timeline`,
@@ -374,7 +377,7 @@ export async function fetchCaseDetail(caseId: string): Promise<CaseDetailBundle 
         lastError: j.last_error,
       })),
       timeline: mappedTimeline,
-      isLive: true,
+      isLive: caseRaw.data_source === "LIVE_DATABASE",
     };
   }
 

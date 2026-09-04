@@ -80,7 +80,7 @@ export interface AnalyticsDeterministicInsight {
 }
 
 export interface AnalyticsDataQualityMeta {
-  dataMode: "SANDBOX BASELINE" | "BACKEND CONNECTED";
+  dataMode: "SANDBOX BASELINE" | "BACKEND CONNECTED" | "LIVE DATABASE" | "SANDBOX SEED" | "EMPTY DATABASE";
   dataSource: string;
   dataState: "AVAILABLE" | "PARTIAL" | "FALLBACK";
   lastSync: string;

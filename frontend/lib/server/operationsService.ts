@@ -183,6 +183,7 @@ export async function fetchOperationsOverview(): Promise<OperationsOverviewBundl
     queueRes,
     workersRes,
     auditRes,
+    metricsRes,
   ] = await Promise.allSettled([
     fetchBackendJson<{ status: string; can_execute_new_jobs: boolean }>("/api/v1/operations/recovery/status"),
     fetchBackendJson<{ status: string; circuit_state: string }>("/api/v1/operations/providers/circuit"),
@@ -190,10 +191,12 @@ export async function fetchOperationsOverview(): Promise<OperationsOverviewBundl
     fetchBackendJson<{ status: string; queued: number; claimed: number; succeeded: number; failed: number; dead_letter: number; backpressure_level: string }>("/api/v1/operations/queue/status"),
     fetchBackendJson<{ total: number; workers: Array<{ worker_id: string; status: string }> }>("/api/v1/operations/workers"),
     fetchBackendJson<{ count: number; audit_events: Array<{ event_id: string; event_type: string; aggregate_id: string; correlation_id: string; timestamp: string; details: Record<string, unknown> }> }>("/api/v1/operations/audit?limit=50"),
+    fetchBackendJson<{ data_source?: string }>("/api/v1/operations/metrics"),
   ]);
 
   const isLive =
-    recoveryRes.status === "fulfilled" && recoveryRes.value !== null;
+    metricsRes.status === "fulfilled" &&
+    metricsRes.value?.data_source === "LIVE_DATABASE";
 
   // 1. Recovery Execution State
   let recovery: RecoveryExecutionState;

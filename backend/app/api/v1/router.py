@@ -172,6 +172,8 @@ def get_operations_metrics(db: Session = Depends(get_db)) -> Dict[str, Any]:
         "revenue_recovered": str(metrics.revenue_recovered),
         "recovery_rate_percent": round(metrics.recovery_rate, 2),
         "average_attempts": round(metrics.average_attempts, 2),
+        "is_sandbox_baseline": metrics.is_sandbox_baseline,
+        "data_source": metrics.data_source,
         "telemetry_snapshot": telemetry_registry.snapshot(),
     }
 
@@ -761,6 +763,7 @@ def get_recovery_case(
         "created_at": case.created_at.isoformat() if case.created_at else None,
         "updated_at": case.updated_at.isoformat() if case.updated_at else None,
         "terminal_reason": case.terminal_reason,
+        "data_source": getattr(case, "data_source", "LIVE_DATABASE"),
         "payment": {
             "amount": str(payment.amount) if payment else None,
             "currency": payment.currency if payment else None,

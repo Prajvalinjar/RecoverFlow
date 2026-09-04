@@ -150,15 +150,22 @@ export async function getAnalyticsBundle(): Promise<AnalyticsDataBundle> {
     "USD";
 
   const isConnected = raw.isBackendReachable;
-  const dataMode = isConnected ? "BACKEND CONNECTED" : "SANDBOX BASELINE";
-  const dataSource = isConnected
+  const isLive = isConnected && raw.metrics.data?.data_source === "LIVE_DATABASE";
+  const dataMode = isLive
+    ? "LIVE DATABASE"
+    : raw.metrics.data?.data_source === "SANDBOX_SEED"
+    ? "SANDBOX SEED"
+    : "SANDBOX BASELINE";
+  const dataSource = isLive
     ? "PostgreSQL Ledger + FastAPI Operations Telemetry"
-    : "Deterministic Sandbox Baseline Snapshot";
+    : "Approved Sandbox Baseline Dataset";
+
+  const liveRateOverride = isLive ? raw.metrics.data?.recovery_rate_percent : undefined;
 
   // Build Timeframe Bundles for 7D, 30D, 90D
   const timeframes: Record<AnalyticsTimeframe, AnalyticsTimeframeBundle> = {
     "7D": buildTimeframeBundle("7D", detectedCurrency),
-    "30D": buildTimeframeBundle("30D", detectedCurrency, raw.metrics.data?.recovery_rate_percent),
+    "30D": buildTimeframeBundle("30D", detectedCurrency, liveRateOverride),
     "90D": buildTimeframeBundle("90D", detectedCurrency),
   };
 
@@ -183,10 +190,10 @@ export async function getAnalyticsBundle(): Promise<AnalyticsDataBundle> {
       label: "30D Window",
       attempts: VERIFIED_AGGREGATES["30D"].attempts,
       recovered: VERIFIED_AGGREGATES["30D"].recovered,
-      rate: raw.metrics.data?.recovery_rate_percent
-        ? `${raw.metrics.data.recovery_rate_percent.toFixed(1)}%`
+      rate: liveRateOverride !== undefined
+        ? `${liveRateOverride.toFixed(1)}%`
         : VERIFIED_AGGREGATES["30D"].rate,
-      rateNum: raw.metrics.data?.recovery_rate_percent || VERIFIED_AGGREGATES["30D"].rateNum,
+      rateNum: liveRateOverride !== undefined ? liveRateOverride : VERIFIED_AGGREGATES["30D"].rateNum,
       recoveredRevenue: formatMoney(VERIFIED_AGGREGATES["30D"].recoveredRevenue, detectedCurrency, {
         showDecimals: false,
         minimumFractionDigits: 0,

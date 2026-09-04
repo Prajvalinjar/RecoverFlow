@@ -32,6 +32,7 @@ class CustomerModel(Base):
     recovery_success_rate = Column(Float, nullable=False, default=0.0)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    data_source = Column(String(32), nullable=False, default="LIVE_DATABASE", server_default="LIVE_DATABASE")
 
     payments = relationship("PaymentModel", back_populates="customer", cascade="all, delete-orphan")
 
@@ -48,6 +49,7 @@ class PaymentModel(Base):
     provider_payment_id = Column(String(128), nullable=True, index=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    data_source = Column(String(32), nullable=False, default="LIVE_DATABASE", server_default="LIVE_DATABASE")
 
     customer = relationship("CustomerModel", back_populates="payments")
     recovery_cases = relationship("RecoveryCaseModel", back_populates="payment", cascade="all, delete-orphan")
@@ -66,6 +68,7 @@ class RecoveryCaseModel(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow, index=True)
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
     terminal_reason = Column(String(256), nullable=True)
+    data_source = Column(String(32), nullable=False, default="LIVE_DATABASE", server_default="LIVE_DATABASE")
 
     payment = relationship("PaymentModel", back_populates="recovery_cases")
     attempts = relationship("RecoveryAttemptModel", back_populates="case", cascade="all, delete-orphan")

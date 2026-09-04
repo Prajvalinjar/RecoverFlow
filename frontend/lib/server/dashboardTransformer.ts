@@ -387,7 +387,7 @@ export function transformBackendBundle(raw: RawBackendBundle): DashboardDataBund
       dataSourceNotice: "Live backend connection offline. Serving approved Sandbox Data Snapshot.",
       headerMeta: {
         systemStatus: "OPERATIONAL",
-        environmentLabel: "TEST / SANDBOX",
+        environmentLabel: "SANDBOX BASELINE",
         serverRegion: "PROD-US-EAST-1",
         providerGateway: "RAZORPAY SANDBOX",
         circuitState: "CIRCUIT: CLOSED",
@@ -413,6 +413,29 @@ export function transformBackendBundle(raw: RawBackendBundle): DashboardDataBund
     raw.payments.data?.payments?.[0]?.currency ||
     "USD";
 
+  // Determine effective backend data mode
+  const m = raw.metrics.data;
+  const rawDataSource = m?.data_source;
+  const isSandboxBaseline = m?.is_sandbox_baseline ?? false;
+
+  let effectiveSource: "SANDBOX_BASELINE" | "SANDBOX_SEED" | "LIVE_DATABASE" | "EMPTY_DATABASE";
+  if (rawDataSource === "SANDBOX_SEED") {
+    effectiveSource = "SANDBOX_SEED";
+  } else if (rawDataSource === "SANDBOX_BASELINE" || isSandboxBaseline) {
+    effectiveSource = "SANDBOX_BASELINE";
+  } else if (rawDataSource === "EMPTY_DATABASE") {
+    effectiveSource = "EMPTY_DATABASE";
+  } else if (rawDataSource === "LIVE_DATABASE") {
+    effectiveSource = "LIVE_DATABASE";
+  } else {
+    // Backward compatibility for legacy backends
+    if (!m || m.total_cases === 0) {
+      effectiveSource = "SANDBOX_BASELINE";
+    } else {
+      effectiveSource = "LIVE_DATABASE";
+    }
+  }
+
   // 1. Header Meta
   const healthOverall = raw.health.data?.overall_status?.toUpperCase() || "HEALTHY";
   const systemStatus: "OPERATIONAL" | "DEGRADED" | "MAINTENANCE" =
@@ -424,25 +447,143 @@ export function transformBackendBundle(raw: RawBackendBundle): DashboardDataBund
 
   const circuitState = raw.circuit.data?.circuit_state?.toUpperCase() || "CLOSED";
 
+  const environmentLabel =
+    effectiveSource === "LIVE_DATABASE"
+      ? "LIVE DATABASE"
+      : effectiveSource === "SANDBOX_SEED"
+      ? "SANDBOX SEED"
+      : effectiveSource === "EMPTY_DATABASE"
+      ? "EMPTY DATABASE"
+      : "SANDBOX BASELINE";
+
   const headerMeta: DashboardHeaderMeta = {
     systemStatus,
-    environmentLabel: "SANDBOX / DEV",
+    environmentLabel,
     serverRegion: "PROD-US-EAST-1",
     providerGateway: raw.providers.data?.providers?.[0]?.provider_name || "RAZORPAY SANDBOX",
     circuitState: `CIRCUIT: ${circuitState}`,
     lastSyncedText: `SYNCED: ${syncedTimeStr} UTC`,
   };
 
-  // 2. Pulse Metrics
-  const m = raw.metrics.data;
-  let pulseMetrics: OperationsPulseMetric[] = SANDBOX_PULSE_METRICS;
+  // 2. Pulse Metrics, Health, and Protection Data
+  let pulseMetrics: OperationsPulseMetric[];
+  let recoveryHealth: RecoveryHealthData;
+  let revenueProtection: RevenueProtectionData;
+  let dataSourceNotice: string | undefined;
 
-  if (m) {
-    const totalCases = m.total_cases ?? 0;
-    const activeCases = m.active_cases ?? 0;
-    const revAtRisk = parseFloat(m.revenue_at_risk || "0");
-    const revRecovered = parseFloat(m.revenue_recovered || "0");
-    const recRate = m.recovery_rate_percent ?? 0;
+  if (effectiveSource === "SANDBOX_BASELINE" || effectiveSource === "SANDBOX_SEED") {
+    pulseMetrics = SANDBOX_PULSE_METRICS;
+    recoveryHealth = SANDBOX_HEALTH_DATA;
+    revenueProtection = SANDBOX_PROTECTION_DATA;
+    dataSourceNotice =
+      effectiveSource === "SANDBOX_SEED"
+        ? "Database populated with curated sandbox dataset. Serving approved aggregate baseline."
+        : "Remote database in sandbox mode. Displaying approved sandbox baseline metrics.";
+  } else if (effectiveSource === "EMPTY_DATABASE") {
+    dataSourceNotice = "Database is connected but contains 0 transactions. Awaiting production ingestion.";
+    pulseMetrics = [
+      {
+        label: "TOTAL CASES",
+        value: "0",
+        subtext: "0 registered cases",
+      },
+      {
+        label: "ACTIVE RECOVERIES",
+        value: "0",
+        subtext: "in-flight pipeline",
+        isCyan: true,
+      },
+      {
+        label: "REVENUE AT RISK",
+        value: formatCurrency(0, detectedCurrency),
+        subtext: "avg $0.00 / tx",
+      },
+      {
+        label: "REVENUE RECOVERED",
+        value: formatCurrency(0, detectedCurrency),
+        subtext: "+$0.00 total",
+        isEmerald: true,
+        deltaIcon: true,
+      },
+      {
+        label: "RECOVERY RATE",
+        value: "0.00%",
+        subtext: "authoritative rate",
+        isEmerald: true,
+        deltaIcon: true,
+      },
+      {
+        label: "RECOVERY ATTEMPTS",
+        value: "0",
+        subtext: "0 attempts",
+      },
+    ];
+    recoveryHealth = {
+      items: [
+        { label: "Recovered", count: "0", pct: "0.00%", color: "var(--rf-emerald)" },
+        { label: "Active", count: "0", pct: "0.00%", color: "var(--rf-cyan)" },
+        { label: "Failed", count: "0", pct: "0.00%", color: "var(--rf-danger)" },
+        { label: "Manual Review", count: "0", pct: "0.00%", color: "var(--rf-warning)" },
+      ],
+      recoveryRate: "0.00%",
+      totalCasesLabel: "0 CASES",
+      percentages: {
+        recovered: 0,
+        active: 0,
+        failed: 0,
+        manualReview: 0,
+      },
+    };
+    revenueProtection = {
+      revenueAtRisk: formatCurrency(0, detectedCurrency),
+      revenueRecovered: formatCurrency(0, detectedCurrency),
+      protectionRate: "0.00% PROTECTED",
+      recoveryPercentageLabel: "(+0.0%)",
+      breakdown: [
+        {
+          label: "Autonomous Orchestration",
+          amount: formatCurrency(0, detectedCurrency),
+          pct: "0.0%",
+          color: "var(--rf-emerald)",
+          desc: "Idempotent backoff & multi-worker execution",
+        },
+        {
+          label: "Dynamic Payment Link Fallback",
+          amount: formatCurrency(0, detectedCurrency),
+          pct: "0.0%",
+          color: "var(--rf-cyan)",
+          desc: "Customer self-service SMS/WhatsApp recovery",
+        },
+        {
+          label: "Active In-Flight Pipeline",
+          amount: formatCurrency(0, detectedCurrency),
+          pct: "0.0%",
+          color: "var(--rf-blue-queued)",
+          desc: "Scheduled for next retry slot",
+        },
+        {
+          label: "Terminal Loss (Hard Declines)",
+          amount: formatCurrency(0, detectedCurrency),
+          pct: "0.0%",
+          color: "#94A3B8",
+          desc: "Invalid credentials or closed accounts",
+        },
+      ],
+      barWidths: {
+        autonomous: "0%",
+        dynamicLink: "0%",
+        inFlight: "0%",
+        terminalLoss: "0%",
+      },
+    };
+  } else {
+    // LIVE_DATABASE mode with genuine records
+    dataSourceNotice = undefined;
+    const totalCases = m?.total_cases ?? 0;
+    const activeCases = m?.active_cases ?? 0;
+    const revAtRisk = parseFloat(m?.revenue_at_risk || "0");
+    const revRecovered = parseFloat(m?.revenue_recovered || "0");
+    const recRate = m?.recovery_rate_percent ?? 0;
 
     pulseMetrics = [
       {
@@ -481,97 +622,88 @@ export function transformBackendBundle(raw: RawBackendBundle): DashboardDataBund
       {
         label: "RECOVERY ATTEMPTS",
         value: formatNumber(
-          m.average_attempts && m.total_cases
+          m?.average_attempts && m?.total_cases
             ? Math.round(m.total_cases * m.average_attempts)
-            : 463
+            : 0
         ),
         subtext: "verified attempts",
       },
     ];
-  }
 
-  // 3. Recovery Health Donut
-  let recoveryHealth: RecoveryHealthData = SANDBOX_HEALTH_DATA;
-  if (m && m.total_cases > 0) {
-    const total = m.total_cases;
-    const recCount = m.recovered_cases ?? 0;
-    const actCount = m.active_cases ?? 0;
-    const failCount = m.failed_cases ?? 0;
-    const manualCount = (m.escalated_cases ?? 0) + (m.stopped_cases ?? 0);
+    if (totalCases > 0) {
+      const recCount = m?.recovered_cases ?? 0;
+      const actCount = m?.active_cases ?? 0;
+      const failCount = m?.failed_cases ?? 0;
+      const manualCount = (m?.escalated_cases ?? 0) + (m?.stopped_cases ?? 0);
 
-    let recPct = Number(((recCount / total) * 100).toFixed(2));
-    const actPct = Number(((actCount / total) * 100).toFixed(2));
-    const failPct = Number(((failCount / total) * 100).toFixed(2));
-    const manPct = Number(((manualCount / total) * 100).toFixed(2));
+      let recPct = Number(((recCount / totalCases) * 100).toFixed(2));
+      const actPct = Number(((actCount / totalCases) * 100).toFixed(2));
+      const failPct = Number(((failCount / totalCases) * 100).toFixed(2));
+      const manPct = Number(((manualCount / totalCases) * 100).toFixed(2));
 
-    // Ensure sum equals exactly 100%
-    const sumPct = recPct + actPct + failPct + manPct;
-    if (sumPct > 0 && Math.abs(sumPct - 100) > 0.001) {
-      const diff = 100 - sumPct;
-      recPct = Number((recPct + diff).toFixed(2));
+      const sumPct = recPct + actPct + failPct + manPct;
+      if (sumPct > 0 && Math.abs(sumPct - 100) > 0.001) {
+        const diff = 100 - sumPct;
+        recPct = Number((recPct + diff).toFixed(2));
+      }
+
+      recoveryHealth = {
+        items: [
+          { label: "Recovered", count: formatNumber(recCount), pct: `${recPct.toFixed(2)}%`, color: "var(--rf-emerald)" },
+          { label: "Active", count: formatNumber(actCount), pct: `${actPct.toFixed(2)}%`, color: "var(--rf-cyan)" },
+          { label: "Failed", count: formatNumber(failCount), pct: `${failPct.toFixed(2)}%`, color: "var(--rf-danger)" },
+          { label: "Manual Review", count: formatNumber(manualCount), pct: `${manPct.toFixed(2)}%`, color: "var(--rf-warning)" },
+        ],
+        recoveryRate: formatPercentage(m?.recovery_rate_percent),
+        totalCasesLabel: `${formatNumber(totalCases)} CASES`,
+        percentages: {
+          recovered: recPct,
+          active: actPct,
+          failed: failPct,
+          manualReview: manPct,
+        },
+      };
+    } else {
+      recoveryHealth = SANDBOX_HEALTH_DATA;
     }
 
-    recoveryHealth = {
-      items: [
-        { label: "Recovered", count: formatNumber(recCount), pct: `${recPct.toFixed(2)}%`, color: "var(--rf-emerald)" },
-        { label: "Active", count: formatNumber(actCount), pct: `${actPct.toFixed(2)}%`, color: "var(--rf-cyan)" },
-        { label: "Failed", count: formatNumber(failCount), pct: `${failPct.toFixed(2)}%`, color: "var(--rf-danger)" },
-        { label: "Manual Review", count: formatNumber(manualCount), pct: `${manPct.toFixed(2)}%`, color: "var(--rf-warning)" },
-      ],
-      recoveryRate: formatPercentage(m.recovery_rate_percent),
-      totalCasesLabel: `${formatNumber(total)} CASES`,
-      percentages: {
-        recovered: recPct,
-        active: actPct,
-        failed: failPct,
-        manualReview: manPct,
-      },
-    };
-  }
-
-  // 4. Revenue Protection Section
-  let revenueProtection: RevenueProtectionData = SANDBOX_PROTECTION_DATA;
-  if (m) {
-    const atRisk = parseFloat(m.revenue_at_risk || "0");
-    const recovered = parseFloat(m.revenue_recovered || "0");
-    const recRate = m.recovery_rate_percent || (atRisk > 0 ? (recovered / atRisk) * 100 : 0);
-
-    const autoPct = Number((recRate * 0.85).toFixed(1));
-    const dynPct = Number((recRate * 0.15).toFixed(1));
-    const remPct = Math.max(0, 100 - recRate);
+    const recProtectionRate = m?.recovery_rate_percent || (revAtRisk > 0 ? (revRecovered / revAtRisk) * 100 : 0);
+    const autoPct = Number((recProtectionRate * 0.85).toFixed(1));
+    const dynPct = Number((recProtectionRate * 0.15).toFixed(1));
+    const remPct = Math.max(0, 100 - recProtectionRate);
     const inFlightPct = Number((remPct * 0.65).toFixed(1));
     const termPct = Number((remPct * 0.35).toFixed(1));
 
     revenueProtection = {
-      revenueAtRisk: formatCurrency(atRisk, detectedCurrency),
-      revenueRecovered: formatCurrency(recovered, detectedCurrency),
-      protectionRate: `${recRate.toFixed(2)}% PROTECTED`,
-      recoveryPercentageLabel: `(+${recRate.toFixed(1)}%)`,
+      revenueAtRisk: formatCurrency(revAtRisk, detectedCurrency),
+      revenueRecovered: formatCurrency(revRecovered, detectedCurrency),
+      protectionRate: `${recProtectionRate.toFixed(2)}% PROTECTED`,
+      recoveryPercentageLabel: `(+${recProtectionRate.toFixed(1)}%)`,
       breakdown: [
         {
           label: "Autonomous Orchestration",
-          amount: formatCurrency(recovered * 0.85, detectedCurrency),
+          amount: formatCurrency(revRecovered * 0.85, detectedCurrency),
           pct: `${autoPct}%`,
           color: "var(--rf-emerald)",
           desc: "Idempotent backoff & multi-worker execution",
         },
         {
           label: "Dynamic Payment Link Fallback",
-          amount: formatCurrency(recovered * 0.15, detectedCurrency),
+          amount: formatCurrency(revRecovered * 0.15, detectedCurrency),
           pct: `${dynPct}%`,
           color: "var(--rf-cyan)",
           desc: "Customer self-service SMS/WhatsApp recovery",
         },
         {
           label: "Active In-Flight Pipeline",
-          amount: formatCurrency(Math.max(0, atRisk - recovered) * 0.65, detectedCurrency),
+          amount: formatCurrency(Math.max(0, revAtRisk - revRecovered) * 0.65, detectedCurrency),
           pct: `${inFlightPct}%`,
           color: "var(--rf-blue-queued)",
           desc: "Scheduled for next retry slot",
         },
         {
           label: "Terminal Loss (Hard Declines)",
-          amount: formatCurrency(Math.max(0, atRisk - recovered) * 0.35, detectedCurrency),
+          amount: formatCurrency(Math.max(0, revAtRisk - revRecovered) * 0.35, detectedCurrency),
           pct: `${termPct}%`,
           color: "#94A3B8",
           desc: "Invalid credentials or closed accounts",
@@ -586,50 +718,54 @@ export function transformBackendBundle(raw: RawBackendBundle): DashboardDataBund
     };
   }
 
-  // 5. Failure Intelligence (Derived from live cases & payments)
+  // 5. Failure Intelligence (Derived from cases & payments)
   let failureIntelligence: FailureIntelligenceItem[] = SANDBOX_FAILURE_ITEMS;
   const casesList = raw.cases.data?.cases || [];
   const paymentsList = raw.payments.data?.payments || [];
 
-  const failureCounts: Record<string, number> = {};
-  for (const c of casesList) {
-    const code = c.failure_reason || "BANK_TIMEOUT";
-    failureCounts[code] = (failureCounts[code] || 0) + 1;
-  }
-  for (const p of paymentsList) {
-    if (p.failure_code) {
-      failureCounts[p.failure_code] = (failureCounts[p.failure_code] || 0) + 1;
+  if (effectiveSource === "LIVE_DATABASE" || (effectiveSource === "SANDBOX_SEED" && casesList.length > 0)) {
+    const failureCounts: Record<string, number> = {};
+    for (const c of casesList) {
+      const code = c.failure_reason || "BANK_TIMEOUT";
+      failureCounts[code] = (failureCounts[code] || 0) + 1;
     }
+    for (const p of paymentsList) {
+      if (p.failure_code) {
+        failureCounts[p.failure_code] = (failureCounts[p.failure_code] || 0) + 1;
+      }
+    }
+
+    const failureEntries = Object.entries(failureCounts);
+    if (failureEntries.length > 0) {
+      const totalFails = failureEntries.reduce((sum, [, count]) => sum + count, 0);
+      failureEntries.sort((a, b) => b[1] - a[1]);
+
+      failureIntelligence = failureEntries.slice(0, 5).map(([code, count], idx) => {
+        const pctNum = totalFails > 0 ? (count / totalFails) * 100 : 0;
+        const pctStr = `${pctNum.toFixed(1)}%`;
+        const known = KNOWN_SEVERITIES[code] || {
+          severity: "MEDIUM" as const,
+          color: "var(--rf-cyan)",
+          yield: "75% Yield",
+        };
+
+        return {
+          rank: `0${idx + 1}`.slice(-2),
+          code,
+          severity: known.severity,
+          severityColor: known.color,
+          count,
+          pct: pctStr,
+          barWidth: pctStr,
+          recoverability: known.yield,
+        };
+      });
+    }
+  } else if (effectiveSource === "EMPTY_DATABASE") {
+    failureIntelligence = [];
   }
 
-  const failureEntries = Object.entries(failureCounts);
-  if (failureEntries.length > 0) {
-    const totalFails = failureEntries.reduce((sum, [, count]) => sum + count, 0);
-    failureEntries.sort((a, b) => b[1] - a[1]);
-
-    failureIntelligence = failureEntries.slice(0, 5).map(([code, count], idx) => {
-      const pctNum = totalFails > 0 ? (count / totalFails) * 100 : 0;
-      const pctStr = `${pctNum.toFixed(1)}%`;
-      const known = KNOWN_SEVERITIES[code] || {
-        severity: "MEDIUM" as const,
-        color: "var(--rf-cyan)",
-        yield: "75% Yield",
-      };
-
-      return {
-        rank: `0${idx + 1}`.slice(-2),
-        code,
-        severity: known.severity,
-        severityColor: known.color,
-        count,
-        pct: pctStr,
-        barWidth: pctStr,
-        recoverability: known.yield,
-      };
-    });
-  }
-
-  // 6. Recent Activity Table (Derived from real backend cases)
+  // 6. Recent Activity Table (Derived from cases)
   let recentActivity: ActivityStreamItem[] = SANDBOX_RECENT_ACTIVITY;
   if (casesList.length > 0) {
     recentActivity = casesList.map((c) => {
@@ -656,6 +792,8 @@ export function transformBackendBundle(raw: RawBackendBundle): DashboardDataBund
         time: getRelativeTime(c.created_at || c.updated_at),
       };
     });
+  } else if (effectiveSource === "EMPTY_DATABASE") {
+    recentActivity = [];
   }
 
   // 7. Telemetry Rail
@@ -706,8 +844,8 @@ export function transformBackendBundle(raw: RawBackendBundle): DashboardDataBund
   };
 
   return {
-    sourceStatus: "LIVE",
-    dataSourceNotice: undefined,
+    sourceStatus: effectiveSource,
+    dataSourceNotice,
     headerMeta,
     pulseMetrics,
     performanceChart: {

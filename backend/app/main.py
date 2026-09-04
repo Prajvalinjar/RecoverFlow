@@ -44,7 +44,24 @@ def startup_event():
     def _init_db_tables():
         try:
             Base.metadata.create_all(bind=engine)
+            # Ensure backward compatibility for any existing tables missing data_source column
+            try:
+                from sqlalchemy import text
+                with engine.connect() as conn:
+                    for tbl in ["customers", "payments", "recovery_cases"]:
+                        try:
+                            conn.execute(text(f"ALTER TABLE {tbl} ADD COLUMN data_source VARCHAR(32) DEFAULT 'LIVE_DATABASE'"))
+                            conn.commit()
+                        except Exception:
+                            pass
+            except Exception:
+                pass
             logger.info("Database tables verified.")
+            try:
+                from app.data.sandbox_seeder import seed_sandbox_data_if_enabled
+                seed_sandbox_data_if_enabled()
+            except Exception as seeder_exc:
+                logger.warning("Sandbox seeder encountered an error: %s", seeder_exc)
         except Exception as exc:
             logger.warning("Could not auto-create tables: %s", exc)
 

@@ -53,6 +53,10 @@ class RecoveryCaseRepository(ABC):
     def list_active_cases(self) -> List[RecoveryCaseModel]:
         pass
 
+    def list_all_cases(self) -> List[RecoveryCaseModel]:
+        """List all recovery cases across all states."""
+        return self.list_active_cases()
+
 
 class RecoveryAttemptRepository(ABC):
     @abstractmethod

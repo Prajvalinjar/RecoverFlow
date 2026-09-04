@@ -174,7 +174,7 @@ export async function fetchProvidersList(): Promise<ProvidersPageResponse> {
         circuitState,
       },
       providers: mappedProviders,
-      isLive: true,
+      isLive: (await fetchBackendJson<{ data_source?: string }>("/api/v1/operations/metrics"))?.data_source === "LIVE_DATABASE",
     };
   }
 
@@ -238,7 +238,7 @@ export async function fetchWorkersList(): Promise<WorkersPageResponse> {
         activeJobs: mappedWorkers.reduce((acc, w) => acc + w.activeJobsCount, 0),
       },
       workers: mappedWorkers,
-      isLive: true,
+      isLive: (await fetchBackendJson<{ data_source?: string }>("/api/v1/operations/metrics"))?.data_source === "LIVE_DATABASE",
     };
   }
 

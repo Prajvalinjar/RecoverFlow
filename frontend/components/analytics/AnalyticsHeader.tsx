@@ -9,7 +9,7 @@ export interface AnalyticsHeaderProps {
   onTimeframeChange: (tf: AnalyticsTimeframe) => void;
   isRefreshing: boolean;
   onRefresh: () => void;
-  dataMode: "SANDBOX BASELINE" | "BACKEND CONNECTED";
+  dataMode: "SANDBOX BASELINE" | "BACKEND CONNECTED" | "LIVE DATABASE" | "SANDBOX SEED" | "EMPTY DATABASE";
 }
 
 export const AnalyticsHeader: React.FC<AnalyticsHeaderProps> = ({
@@ -65,17 +65,17 @@ export const AnalyticsHeader: React.FC<AnalyticsHeaderProps> = ({
                 fontFamily: "var(--font-jetbrains-mono), monospace",
                 letterSpacing: "0.04em",
                 backgroundColor:
-                  dataMode === "SANDBOX BASELINE"
-                    ? "var(--rf-warning-surface)"
-                    : "var(--rf-emerald-surface)",
+                  dataMode === "LIVE DATABASE"
+                    ? "var(--rf-emerald-surface)"
+                    : "var(--rf-warning-surface)",
                 color:
-                  dataMode === "SANDBOX BASELINE"
-                    ? "var(--rf-warning-text)"
-                    : "var(--rf-emerald-text)",
+                  dataMode === "LIVE DATABASE"
+                    ? "var(--rf-emerald-text)"
+                    : "var(--rf-warning-text)",
                 border: `1px solid ${
-                  dataMode === "SANDBOX BASELINE"
-                    ? "var(--rf-warning-border)"
-                    : "var(--rf-emerald-border)"
+                  dataMode === "LIVE DATABASE"
+                    ? "var(--rf-emerald-border)"
+                    : "var(--rf-warning-border)"
                 }`,
               }}
             >

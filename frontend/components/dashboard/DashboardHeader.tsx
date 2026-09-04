@@ -95,7 +95,12 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ headerMeta }) 
             label={meta.systemStatus === "OPERATIONAL" ? "SYSTEM OPERATIONAL" : "SYSTEM DEGRADED"}
             size="sm"
           />
-          <Badge status="SANDBOX" label={meta.environmentLabel} dot={false} size="sm" />
+          <Badge
+            status={meta.environmentLabel === "LIVE DATABASE" ? "OPERATIONAL" : "SANDBOX"}
+            label={meta.environmentLabel}
+            dot={false}
+            size="sm"
+          />
 
           {/* Micro Environment Tokens */}
           <div

@@ -466,6 +466,8 @@ export async function fetchAuditList(): Promise<AuditPageResponse> {
       },
     }));
 
+    const casesData = await fetchCasesList();
+
     return {
       summary: {
         totalEvents: mappedEvents.length,
@@ -475,7 +477,7 @@ export async function fetchAuditList(): Promise<AuditPageResponse> {
         errorEvents: mappedEvents.filter((e) => e.status === "FAILED").length,
       },
       events: mappedEvents,
-      isLive: true,
+      isLive: casesData.isLive,
     };
   }
 
