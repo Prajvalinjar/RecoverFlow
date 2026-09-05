@@ -11,37 +11,27 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-336791?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
 [![Tests Passing](https://img.shields.io/badge/Tests-273%20Passed-success?style=flat-square&logo=pytest)](https://pytest.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-[![Environment](https://img.shields.io/badge/Environment-Test%2FSandbox-orange?style=flat-square)](#-evaluator-guide)
-
----
-
-## 📌 Short Problem Statement
-
-Payment processing failures represent an immediate leak in digital business revenue. However, blindly retrying failed payments damages merchant reputation, risks card network sanctions, triggers customer fatigue, and inflates gateway processing fees. 
-
-**RecoverFlow** provides an operations platform for payment recovery. It bridges intelligent recovery recommendations with deterministic, zero-trust operational safeguards—ensuring every retry attempt is mathematically safe, rate-limited, and audited.
-
-> [!IMPORTANT]  
-> **Test / Sandbox Demonstration Notice:**  
-> This application is deployed in **Test/Sandbox Mode**. All records, customer details, transactions, and baseline recovery metrics are clearly labelled sandbox fixtures for demonstration and evaluation purposes. They must never be presented as genuine production payment data.
+[![Environment](https://img.shields.io/badge/Environment-Test%2FSandbox-orange?style=flat-square)](#-live-demo)
 
 ---
 
 ## 🔗 Live Demo
 
 | Resource | Link | Description |
-| :--- | :--- | :--- |
-| **Live Frontend** | [PASTE YOUR DEPLOYED VERCEL LINK] | Hosted Next.js 16 web application on Vercel |
-| **Backend API** | [PASTE YOUR DEPLOYED RENDER BACKEND LINK] | FastAPI core backend on Render |
-| **Health Check** | [PASTE YOUR HEALTH CHECK LINK] | Real-time backend health check endpoint |
-| **GitHub Repository** | [https://github.com/Prajvalinjar/RecoverFlow](https://github.com/Prajvalinjar/RecoverFlow) | Source code repository |
+|----------|------|-------------|
+| **Live Frontend** | https://recover-flow-sigma.vercel.app/ | Deployed Next.js application hosted on Vercel |
+| **Backend API** | https://recoverflow-backend.onrender.com | FastAPI backend hosted on Render |
+| **Health Check** | https://recoverflow-backend.onrender.com/api/v1/health | Backend availability and service health endpoint |
+| **GitHub Repository** | https://github.com/Prajvalinjar/RecoverFlow | Complete source code and project documentation |
+
+> **Demo Environment:** The deployed application currently runs in Test/Sandbox mode. Sandbox records and baseline metrics are clearly labelled and are not presented as genuine production payment data.
 
 ---
 
 ## 🎥 Pitch Video
 
 Watch the platform walkthrough, architectural breakdown, and live operations demo:  
-▶️ **[RecoverFlow Demonstration & Pitch Video](https://drive.google.com/file/d/1kaxS3ESKeXNuHq_EeuVmqtUPc8ZQc3Ys/view?usp=drivesdk)**
+▶️ **[RecoverFlow Technical Walkthrough & Pitch Video](https://drive.google.com/file/d/1kaxS3ESKeXNuHq_EeuVmqtUPc8ZQc3Ys/view?usp=drivesdk)**
 
 ---
 
@@ -60,17 +50,17 @@ flowchart LR
     G --> H[Operations Control]
 ```
 
-1. **Open the live frontend**: Visit `[PASTE YOUR DEPLOYED VERCEL LINK]`.
-2. **Confirm Test/Sandbox status**: Verify the persistent **Test / Sandbox Mode** indicator at the top of the interface.
-3. **Open the Overview dashboard**: Review aggregate platform metrics: *Total Cases*, *Active Recoveries*, *Revenue at Risk*, *Recovered Revenue*, and *Recovery Rate*.
+1. **Open the Live Frontend**: Visit [https://recover-flow-sigma.vercel.app/](https://recover-flow-sigma.vercel.app/).
+2. **Confirm Sandbox Mode**: Verify the persistent **Test / Sandbox Mode** indicator at the top of the interface.
+3. **Inspect the Overview Dashboard**: Review top-line recovery metrics: *Total Cases*, *Active Recoveries*, *Revenue at Risk*, *Recovered Revenue*, and *Recovery Rate*.
 4. **Explore Recovery Cases**: Navigate to `/cases` to observe recovery states, failure code mappings, customer profiles, and retry attempts.
 5. **Explore Payments**: Navigate to `/payments` to verify how failed transactions link directly to downstream recovery cases.
-6. **Open a recovery case**: Inspect the case details and view the end-to-end recovery lifecycle.
-7. **Inspect the Recovery Flow**: Follow the interactive 8-stage pipeline visualization from failure detection to final reconciliation.
-8. **Review AI Advisory and Policy Engine separation**: Notice how AI provides contextual intelligence (optimal window, channel advice) with **0% execution authority**, while the deterministic **Policy Engine** has **100% execution authority**.
+6. **Open a Recovery Case**: Inspect the case details and view the end-to-end recovery lifecycle.
+7. **Inspect the Recovery Flow**: Follow the interactive 8-stage pipeline visualization (`Payment Failure` → `Signal Detection` → `Classification` → `AI Advisory` → `Policy Engine` → `Provider Execution` → `Reconciliation` → `Audit Trail`).
+8. **Review AI Advisory and Policy Engine Separation**: Notice how AI provides contextual intelligence (optimal window, channel advice) with **0% execution authority**, while the deterministic **Policy Engine** enforces **100% execution authority**.
 9. **Open Recovery Analytics**: Navigate to `/analytics` to review performance across 7-day, 30-day, and 90-day evaluation windows.
 10. **Open Operations Control**: Navigate to `/operations` to evaluate circuit-breaker states, worker queue backpressure, provider health, and execution pause/resume switches.
-11. **Verify sandbox labels and operational safeguards**: Confirm that all sandbox data is distinctly labeled and execution controls are fully active.
+11. **Verify Sandbox Labels and Operational Safeguards**: Confirm that all sandbox data is distinctly labeled and execution controls are fully active.
 
 ---
 
@@ -361,7 +351,7 @@ python -m app.data.generator
 uvicorn main:app --reload --port 8000
 ```
 
-Verify backend health at: `http://localhost:8000/health`
+Verify backend health at: `http://localhost:8000/health` or `http://localhost:8000/api/v1/health`
 
 ---
 
@@ -393,7 +383,7 @@ Open your browser at: `http://localhost:3000`
 | :--- | :--- | :--- |
 | `DATABASE_URL` | PostgreSQL connection URL | `postgresql://postgres:postgres@localhost:5432/recoverflow` |
 | `ENVIRONMENT` | Deployment environment mode | `sandbox` |
-| `CORS_ORIGINS` | Permitted client origins | `http://localhost:3000,[PASTE YOUR DEPLOYED VERCEL LINK]` |
+| `CORS_ORIGINS` | Permitted client origins | `http://localhost:3000,https://recover-flow-sigma.vercel.app` |
 | `MAX_RETRY_LIMIT` | Policy engine maximum retry cap | `3` |
 | `CIRCUIT_BREAKER_THRESHOLD` | Failure rate trigger threshold | `0.30` |
 
@@ -401,7 +391,7 @@ Open your browser at: `http://localhost:3000`
 
 | Variable | Description | Example / Default |
 | :--- | :--- | :--- |
-| `NEXT_PUBLIC_API_BASE_URL` | Base URL for the FastAPI backend | `http://localhost:8000` or `[PASTE YOUR DEPLOYED RENDER BACKEND LINK]` |
+| `NEXT_PUBLIC_API_BASE_URL` | Base URL for the FastAPI backend | `https://recoverflow-backend.onrender.com` |
 | `NEXT_PUBLIC_ENVIRONMENT` | Active environment label | `sandbox` |
 
 ---
@@ -410,7 +400,7 @@ Open your browser at: `http://localhost:3000`
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/health` | Application health and DB connectivity status |
+| `GET` | `/health` / `/api/v1/health` | Application health and service availability status |
 | `GET` | `/api/v1/metrics/overview` | Command Center aggregate statistics |
 | `GET` | `/api/v1/cases` | Paginated recovery cases list |
 | `GET` | `/api/v1/cases/{case_id}` | Detailed case history and recovery flow trace |
@@ -485,8 +475,8 @@ tests/test_operations_control.py ....................................... [100%]
 
 **Prajval O.**
 
-- **GitHub**: [https://github.com/Prajvalinjar](https://github.com/Prajvalinjar)
-- **LinkedIn**: [https://www.linkedin.com/in/prajval-injar-8529aa2b2/](https://www.linkedin.com/in/prajval-injar-8529aa2b2/)
+- **LinkedIn**: [LinkedIn Profile](https://www.linkedin.com/in/prajval-injar-8529aa2b2/)
+- **GitHub**: [GitHub Profile](https://github.com/Prajvalinjar)
 - **Email**: [injarprajval@gmail.com](mailto:injarprajval@gmail.com)
 
 ---
