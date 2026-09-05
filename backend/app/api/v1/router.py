@@ -35,7 +35,7 @@ ops_controller = RecoveryOperationsController()
 provider_monitor = ProviderHealthMonitor()
 
 
-@api_v1_router.get("/health")
+@api_v1_router.api_route("/health", methods=["GET", "HEAD"])
 def api_health() -> Dict[str, str]:
     """API V1 Health Check."""
     return {"status": "ok", "service": "recoverflow-api", "version": "1.0.0"}

@@ -165,7 +165,11 @@ def test_health_endpoints_remain_functional():
     assert res1.status_code == 200
     assert res1.json()["status"] == "healthy"
 
-    # API V1 /api/v1/health
+    # API V1 /api/v1/health GET
     res2 = client.get("/api/v1/health")
     assert res2.status_code == 200
     assert res2.json()["status"] == "ok"
+
+    # API V1 /api/v1/health HEAD (Uptime monitoring)
+    res3 = client.head("/api/v1/health")
+    assert res3.status_code == 200
